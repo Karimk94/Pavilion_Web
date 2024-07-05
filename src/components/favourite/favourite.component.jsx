@@ -1,12 +1,12 @@
-import React, { useContext } from "react";
-import styled from "styled-components";
 import { Favorite, FavoriteBorder } from "@mui/icons-material";
+import { useContext } from "react";
+import styled from "styled-components";
 import { FavouritesContext } from "../../services/favourites/favourites.context";
 
 const FavouriteButton = styled.button`
   top: 25px;
   right: 25px;
-  z-index: 1;
+  z-index: 0;
   background: none;
   border: none;
   cursor: pointer;
@@ -21,9 +21,7 @@ export const Favourite = ({ product }) => {
   return (
     <FavouriteButton
       onClick={() =>
-        !isFavourite
-          ? addToFavourites(product)
-          : removeFromFavourites(product)
+        !isFavourite ? addToFavourites(product) : removeFromFavourites(product)
       }
     >
       {isFavourite ? (

@@ -1,11 +1,15 @@
-import React from "react";
+import { Button } from "@mui/material";
 import Lottie from "react-lottie";
-import { ThemeProvider } from "styled-components";
-import { Button, Typography } from "@mui/material";
 import styled from "styled-components";
-import { Spacer } from "../../../components/spacer/spacer.component";
 import animationData from "../../../../assets/watermelon.json";
-import { AccountBackground, AccountContainer, AccountCover, AnimationWrapper, Title } from "../components/account.styles";
+import { Spacer } from "../../../components/spacer/spacer.component";
+import {
+  AccountBackground,
+  AccountContainer,
+  AccountCover,
+  AnimationWrapper,
+  Title,
+} from "../components/account.styles";
 
 // Styled Button for web
 const WebAuthButton = styled(Button)`

@@ -1,4 +1,3 @@
-import React from "react";
 import { ReactSVG } from "react-svg";
 import styled from "styled-components";
 import open from "../../../../assets/open.js";
@@ -8,11 +7,8 @@ import { Spacer } from "../../../components/spacer/spacer.component";
 import { Text } from "../../../components/typography/text.component";
 import {
   Address,
-  Icon,
   Info,
   Rating,
-  ShopCard,
-  ShopCardCover,
   Section,
   SectionEnd,
 } from "./shop-info-card.styles";
@@ -63,7 +59,12 @@ export const ShopInfoCard = ({ shop = {} }) => {
         <Section>
           <Rating>
             {ratingArray.map((_, i) => (
-              <ReactSVG key={`star-${placeId}-${i}`} src={star} width={20} height={20} />
+              <ReactSVG
+                key={`star-${placeId}-${i}`}
+                src={star}
+                width={20}
+                height={20}
+              />
             ))}
           </Rating>
           <SectionEnd>

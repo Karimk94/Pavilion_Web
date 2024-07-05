@@ -1,12 +1,16 @@
-import React, { useContext, useState } from "react";
-import { CircularProgress, TextField, Button, Typography } from "@mui/material";
+import { Button, CircularProgress, TextField, Typography, IconButton } from "@mui/material";
+import { useContext, useState } from "react";
 import styled from "styled-components";
+import { FaChevronLeft } from "react-icons/fa6";
 import { Spacer } from "../../../components/spacer/spacer.component";
-import { colors } from "../../../infrastructure/theme/colors";
 import { AuthenticationContext } from "../../../services/authentication/authentication.context";
-import { AccountBackground, AccountContainer, AccountCover, AuthButton, Title, ErrorContainer } from "../components/account.styles";
+import {
+  AccountBackground,
+  AccountContainer,
+  AccountCover,
+  ErrorContainer,
+} from "../components/account.styles";
 
-// Styled Button for web
 const WebAuthButton = styled(Button)`
   && {
     background-color: ${(props) => props.theme.colors.brand.primary};
@@ -15,7 +19,6 @@ const WebAuthButton = styled(Button)`
   }
 `;
 
-// Styled TextField for web
 const AuthInput = styled(TextField)`
   && {
     width: 100%;
@@ -23,16 +26,33 @@ const AuthInput = styled(TextField)`
   }
 `;
 
-const LoginScreen = ({ navigation }) => {
+const BackButton = styled(IconButton)`
+  && {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    color: ${(props) => props.theme.colors.brand.primary};
+  }
+`;
+
+const LoginScreen = ({ setView }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const { onLogin, error, isLoading } = useContext(AuthenticationContext);
 
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      onLogin(email, password);
+    }
+  };
+
   return (
     <AccountBackground>
       <AccountCover />
-      <Title>Pavilion</Title>
-      <AccountContainer>
+      <BackButton onClick={() => setView("default")}>
+        <FaChevronLeft />
+      </BackButton>
+      <AccountContainer onKeyPress={handleKeyPress}>
         <AuthInput
           label="E-mail"
           value={email}
@@ -71,11 +91,6 @@ const LoginScreen = ({ navigation }) => {
           )}
         </Spacer>
       </AccountContainer>
-      <Spacer size="large">
-        <WebAuthButton variant="contained" onClick={() => navigation.goBack()}>
-          Back
-        </WebAuthButton>
-      </Spacer>
     </AccountBackground>
   );
 };

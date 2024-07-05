@@ -1,6 +1,7 @@
 
 const liveHost = "https://192.168.2.5:7215/api/";
-const localHost = "https://multiply-prompt-sparrow.ngrok-free.app/api/";
+//const localHost = "https://multiply-prompt-sparrow.ngrok-free.app/api/";
+const localHost = "https://localhost:7215/api/";
 
 //ngrok http --domain=multiply-prompt-sparrow.ngrok-free.app https://localhost:7215 --host-header=rewrite
 

@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
-import styled from 'styled-components';
-import { usePaymentInputs } from 'react-payment-inputs';
-import images from 'react-payment-inputs/images';
-import { cardTokenRequest } from '../../../services/checkout/checkout.service';
-import { Box, Grid, TextField, Typography, Button } from '@mui/material';
+import { Box, Button, Grid, TextField } from "@mui/material";
+import { useState } from "react";
+import { usePaymentInputs } from "react-payment-inputs";
+import images from "react-payment-inputs/images";
+import styled from "styled-components";
+import { cardTokenRequest } from "../../../services/checkout/checkout.service";
 
 const CardInputContainer = styled.div`
   .rpi-input {
@@ -23,12 +23,12 @@ const CardInputContainer = styled.div`
 
 export const CreditCardInput = ({ name, onSuccess, onError }) => {
   const [card, setCard] = useState({
-    number: '',
+    number: "",
     name: name,
-    expiry: '',
-    cvc: '',
+    expiry: "",
+    cvc: "",
   });
-  const [focused, setFocused] = useState('');
+  const [focused, setFocused] = useState("");
 
   const {
     getCardNumberProps,
@@ -48,7 +48,7 @@ export const CreditCardInput = ({ name, onSuccess, onError }) => {
   };
 
   const handleCardSubmit = async () => {
-    const expiry = card.expiry.split('/');
+    const expiry = card.expiry.split("/");
     const cardDetails = {
       number: card.number,
       exp_month: expiry[0],

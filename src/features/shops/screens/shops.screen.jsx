@@ -1,5 +1,5 @@
-import React, { useContext, useState } from "react";
-import { CircularProgress, List, ListItem, ListItemText, IconButton } from "@mui/material";
+import { CircularProgress, List, ListItem } from "@mui/material";
+import { useContext, useState } from "react";
 import styled from "styled-components";
 import { FadeInView } from "../../../components/animations/fade.animation";
 import { FavouritesBar } from "../../../components/favourites/favourites-bar.component";
@@ -10,8 +10,8 @@ import { colors } from "../../../infrastructure/theme/colors";
 import { FavouritesContext } from "../../../services/favourites/favourites.context";
 import { LocationContext } from "../../../services/location/location.context";
 import { ShopsContext } from "../../../services/shops/shops.context";
-import { ShopInfoCard } from "../components/shop-info-card.component";
 import { Search } from "../components/search.component";
+import { ShopInfoCard } from "../components/shop-info-card.component";
 
 const Loading = styled(CircularProgress)`
   margin-left: -25px;

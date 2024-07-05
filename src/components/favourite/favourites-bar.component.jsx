@@ -1,6 +1,5 @@
-import React from "react";
-import styled from "styled-components";
 import { Card, Typography } from "@mui/material";
+import styled from "styled-components";
 import { CompactShopInfo } from "../shop/compact-shop-info.component";
 import { Spacer } from "../spacer/spacer.component";
 

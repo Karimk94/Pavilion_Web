@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick-theme.css";
@@ -8,54 +8,56 @@ import star from "../../../../assets/star.js";
 import { Favourite } from "../../../components/favourites/favourite.component.jsx";
 import { Spacer } from "../../../components/spacer/spacer.component.jsx";
 import { Text } from "../../../components/typography/text.component.jsx";
+import { CartContext } from "../../../services/cart/cart.context";
+import { ProductsContext } from "../../../services/products/products.context";
 import { convertCurrency } from "../../../utils/currency-converter.js";
 import {
   ProductCard,
-  ProductCardCover,
   Rating,
   Section,
   SectionEnd,
 } from "./product-info-card.styles.jsx";
 
-const renderSvg = (svgString) => {
-  return (
-    <div
-      dangerouslySetInnerHTML={{ __html: svgString }}
-      style={{ width: "20px", height: "20px" }}
-    />
-  );
-};
+const renderSvg = (svgString) => (
+  <div
+    dangerouslySetInnerHTML={{ __html: svgString }}
+    style={{ width: "20px", height: "20px" }}
+  />
+);
 
 const ProductDetails = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   flex: 1;
-  padding: 16px;
+  padding: 8px 16px;
 `;
 
 const ImageContainer = styled.div`
   width: 100%;
-  padding-bottom: 16px;
+  height: 200px; /* Adjusted height */
+  padding-bottom: 8px;
   flex: 0 0 auto;
 `;
 
 const PriceContainer = styled.div`
-  margin-top: 8px;
-  margin-bottom: 16px;
+  margin-top: 4px;
+  margin-bottom: 8px;
   color: #b12704;
-  font-size: 20px;
+  font-size: 18px;
+  font-family: "Roboto", sans-serif;
 `;
 
 const AddToCartButton = styled.button`
   background-color: ${(props) => props.theme.colors.brand.primary};
   color: white;
   border: none;
-  padding: 10px;
+  padding: 8px;
   cursor: pointer;
   border-radius: 5px;
-  font-size: 16px;
-  margin-top: 10px;
+  font-size: 14px;
+  margin-top: 8px;
+  font-family: "Roboto", sans-serif;
 
   &:hover {
     background-color: ${(props) => props.theme.colors.brand.dark};
@@ -66,6 +68,7 @@ const ShopLink = styled.a`
   color: ${(props) => props.theme.colors.brand.primary};
   text-decoration: none;
   cursor: pointer;
+  font-family: "Lora", serif;
 
   &:hover {
     text-decoration: underline;
@@ -74,19 +77,15 @@ const ShopLink = styled.a`
 
 const CarouselImage = styled.img`
   width: 100%;
-  height: auto;
-  max-height: 300px;
+  height: 100%;
   object-fit: contain;
-  margin: 0 auto;
 `;
 
 const SingleImage = styled.img`
   width: 100%;
-  height: auto;
-  max-height: 300px;
+  height: 100%;
   object-fit: contain;
   display: block;
-  margin: 0 auto;
 `;
 
 const ProductCardWrapper = styled(ProductCard)`
@@ -95,11 +94,41 @@ const ProductCardWrapper = styled(ProductCard)`
   height: 100%;
 `;
 
+const StyledText = styled(Text)`
+  font-family: "Merriweather", serif;
+  font-weight: bold;
+  font-size: 16px;
+`;
+
+const DescriptionText = styled(Text)`
+  font-family: "Merriweather", serif;
+  font-size: 14px;
+`;
+
+const NotificationContainer = styled.div`
+  position: fixed;
+  top: 75px;
+  right: 50px;
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 10px 20px;
+  border-radius: 5px;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  visibility: ${(props) => (props.show ? "visible" : "hidden")};
+  opacity: ${(props) => (props.show ? 1 : 0)};
+  transition: visibility 0s, opacity 0.5s linear;
+`;
+
 const ProductInfoCard = ({ product = {}, currency = {}, isDetail = false }) => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { addToCart } = useContext(CartContext);
+  const { currency: contextCurrency } = useContext(ProductsContext);
 
-  currency = Object.keys(currency).length === 0 ? location?.state?.pageCurrency : currency;
+  currency = Object.keys(currency).length === 0 ? contextCurrency : currency;
 
   const {
     categoryName = "",
@@ -121,8 +150,8 @@ const ProductInfoCard = ({ product = {}, currency = {}, isDetail = false }) => {
   const finalPrice = price - price * (discount / 100);
   const { currencyName, currencyCode = "USD", currencySymbol = "$" } = currency;
 
-  const ratingArray = Array.from(new Array(Math.floor(stars)));
   const [amountInOtherCurrency, setAmountInOtherCurrency] = useState(0);
+  const [isNotificationVisible, setIsNotificationVisible] = useState(false);
 
   const handleConversion = useCallback(async () => {
     try {
@@ -147,8 +176,9 @@ const ProductInfoCard = ({ product = {}, currency = {}, isDetail = false }) => {
 
   const handleAddToCart = (e) => {
     e.stopPropagation();
-    // Add the logic to add the item to the cart
-    console.log("Add to cart", product);
+    addToCart(product);
+    setIsNotificationVisible(true);
+    setTimeout(() => setIsNotificationVisible(false), 3000);
   };
 
   const settings = {
@@ -157,59 +187,63 @@ const ProductInfoCard = ({ product = {}, currency = {}, isDetail = false }) => {
     speed: 500,
     slidesToShow: 1,
     slidesToScroll: 1,
+    arrows: true,
+    adaptiveHeight: true,
   };
 
   return (
-    <ProductCardWrapper elevation={2}>
-      <ImageContainer>
-        {isDetail && pictures.length > 1 ? (
-          <Slider {...settings}>
-            {pictures.map((pic, index) => (
-              <div key={index}>
-                <CarouselImage src={`${baseImagePath}${pic}`} alt={name} />
-              </div>
-            ))}
-          </Slider>
-        ) : (
-          <SingleImage
-            src={imageUrl}
-            alt={name}
-          />
-        )}
-        <Favourite product={product} />
-      </ImageContainer>
-      <ProductDetails>
-        <Text variant="label" style={{ fontWeight: "bold", fontSize: "18px" }}>
-          {name}
-        </Text>
-        <Spacer position="top" size="small">
-          <Text variant="body">{description}</Text>
-        </Spacer>
-        <PriceContainer>
-          {`${amountInOtherCurrency} ${currencySymbol}`}
-        </PriceContainer>
-        <Section>
-          <Rating>
-            {ratingArray.map((_, i) => (
-              <div key={`star-${id}-${i}`}>{renderSvg(star)}</div>
-            ))}
-          </Rating>
-          <SectionEnd>
-            <Spacer position="left" size="small">
-              <ShopLink
-                onClick={(e) => {
-                  e.stopPropagation();
-                  navigate(`/shop/${shopId}`);
-                }}
-              >
-                {shopName}
-              </ShopLink>
-            </Spacer>
-          </SectionEnd>
-        </Section>
-        <AddToCartButton onClick={handleAddToCart}>Add to Cart</AddToCartButton>
-      </ProductDetails>
-    </ProductCardWrapper>
+    <>
+      <ProductCardWrapper elevation={2}>
+        <ImageContainer>
+          {isDetail && pictures.length > 1 ? (
+            <Slider {...settings}>
+              {pictures.map((pic, index) => (
+                <div key={index}>
+                  <CarouselImage src={`${baseImagePath}${pic}`} alt={name} />
+                </div>
+              ))}
+            </Slider>
+          ) : (
+            <SingleImage src={imageUrl} alt={name} />
+          )}
+          <Favourite product={product} />
+        </ImageContainer>
+        <ProductDetails>
+          <StyledText>{name}</StyledText>
+          <Spacer position="top" size="small">
+            <DescriptionText>{description}</DescriptionText>
+          </Spacer>
+          <PriceContainer>{`${amountInOtherCurrency.toFixed(
+            2
+          )} ${currencySymbol}`}</PriceContainer>
+          <Section>
+            <Rating>
+              {Array.from({ length: Math.floor(stars) }).map((_, i) => (
+                <div key={`star-${id}-${i}`}>{renderSvg(star)}</div>
+              ))}
+            </Rating>
+            <SectionEnd>
+              <Spacer position="left" size="small">
+                <ShopLink
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    navigate(`/shop/${shopId}`);
+                  }}
+                >
+                  {shopName}
+                </ShopLink>
+              </Spacer>
+            </SectionEnd>
+          </Section>
+          <AddToCartButton onClick={handleAddToCart}>
+            Add to Cart
+          </AddToCartButton>
+        </ProductDetails>
+      </ProductCardWrapper>
+      <NotificationContainer show={isNotificationVisible}>
+      {name} added to cart!
+      </NotificationContainer>
+    </>
   );
 };
 

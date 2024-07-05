@@ -1,18 +1,15 @@
-import styled from "styled-components";
 import { Button, TextField, Typography } from "@mui/material";
+import styled from "styled-components";
 import { colors } from "../../../infrastructure/theme/colors";
-import homeBg from "../../../../assets/home_bg.jpg";
 
 export const AccountBackground = styled.div`
-  background-image: url(${homeBg});
   background-size: cover;
   background-position: center;
   display: flex;
   flex: 1;
   align-items: center;
   justify-content: center;
-  height: 100vh;
-  width: 100vw;
+  flex-direction: column;
 `;
 
 export const AccountCover = styled.div`

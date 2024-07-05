@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import { AuthenticationContext } from "../../services/authentication/authentication.context";
 
 export const FavouritesContext = createContext();

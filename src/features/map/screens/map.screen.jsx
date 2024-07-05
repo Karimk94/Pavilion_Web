@@ -1,6 +1,6 @@
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
-import React, { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet";
 import styled from "styled-components";
 import { LocationContext } from "../../../services/location/location.context";
@@ -44,11 +44,7 @@ export const MapScreen = ({ navigation }) => {
   return (
     <>
       <Search />
-      <MapContainerStyled
-        center={[lat, lng]}
-        zoom={13}
-        scrollWheelZoom={false}
-      >
+      <MapContainerStyled center={[lat, lng]} zoom={13} scrollWheelZoom={false}>
         <TileLayer
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'

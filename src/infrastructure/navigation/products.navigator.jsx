@@ -1,4 +1,3 @@
-import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import ProductDetailScreen from "../../features/products/screens/product-detail.screen";
 import { ProductsScreen } from "../../features/products/screens/products.screen";

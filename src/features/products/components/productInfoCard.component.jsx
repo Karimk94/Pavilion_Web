@@ -1,19 +1,11 @@
-import React from "react";
+import { CardContent, CardMedia, Card as MuiCard } from "@mui/material";
 import { Svg } from "react-svg";
 import styled from "styled-components";
-import { Card as MuiCard, CardContent, CardMedia } from "@mui/material";
 import open from "../../../../assets/open.svg";
 import star from "../../../../assets/star.svg";
 import { Favourite } from "../../../components/favourite/favourite.component";
 import { Text } from "../../../components/typography/text.component";
-import {
-  Info,
-  ProductCard,
-  ProductCardCover,
-  Rating,
-  Section,
-  SectionEnd,
-} from "./productInfoCardStyles";
+import { Info, Rating, Section, SectionEnd } from "./productInfoCardStyles";
 
 const StyledSvg = styled(Svg)`
   width: 20px;
@@ -39,9 +31,10 @@ const StyledMuiCardContent = styled(CardContent)`
 const ProductInfo = ({ product = {}, onPressIcon }) => {
   const { name, location, id, imageUrl, closed_bucket } = product;
 
-  const ratingArr = Array.isArray(imageUrl) && imageUrl.length !== 0
-    ? Array.from(new Array(Math.floor(imageUrl.length / 3)))
-    : [];
+  const ratingArr =
+    Array.isArray(imageUrl) && imageUrl.length !== 0
+      ? Array.from(new Array(Math.floor(imageUrl.length / 3)))
+      : [];
 
   return (
     <StyledMuiCard elevation={5}>
@@ -69,9 +62,7 @@ const ProductInfo = ({ product = {}, onPressIcon }) => {
               {closed_bucket !== "VeryLikelyOpen" && (
                 <Text variant="error">CLOSED TEMPORARILY</Text>
               )}
-              {closed_bucket === "VeryLikelyOpen" && (
-                <StyledSvg src={open} />
-              )}
+              {closed_bucket === "VeryLikelyOpen" && <StyledSvg src={open} />}
             </SectionEnd>
           </Section>
           <Text variant="label">{location}</Text>

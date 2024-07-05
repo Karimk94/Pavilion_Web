@@ -22,7 +22,7 @@ export const productsRequest = async (loc, key) => {
   };
 
   const { data, error } = await fetchHttp(
-    `${host}Product/getproducts`,
+    'Product/getproducts',
     requestOptions
   );
   if (data) {

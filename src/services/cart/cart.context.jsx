@@ -1,83 +1,52 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect } from "react";
+import { useLocalStorage } from "../../hooks/useLocalStorage";
 import { AuthenticationContext } from "../authentication/authentication.context";
 
 export const CartContext = createContext();
 
 export const CartContextProvider = ({ children }) => {
   const { user } = useContext(AuthenticationContext);
-
-  const [cart, setCart] = useState([]);
-  const [shop, setShop] = useState(null);
-  const [sum, setSum] = useState(0);
-
-  const saveCart = (rst, crt, uid) => {
-    try {
-      const jsonValue = JSON.stringify({ shop: rst, cart: crt });
-      localStorage.setItem(`cart-${uid}`, jsonValue);
-    } catch (e) {
-      console.error("Error storing", e);
-    }
-  };
-
-  const loadCart = (uid) => {
-    try {
-      const value = localStorage.getItem(`cart-${uid}`);
-      if (value !== null) {
-        const { shop: rst, cart: crt } = JSON.parse(value);
-        setShop(rst);
-        setCart(crt);
-      }
-    } catch (e) {
-      console.error("Error loading", e);
-    }
-  };
+  const [cart, setCart] = useLocalStorage("cart", []);
 
   useEffect(() => {
-    if (user && user.uid) {
-      loadCart(user.uid);
+    if (user) {
+      // Logic to fetch and set the cart from user's saved data
     }
   }, [user]);
 
-  useEffect(() => {
-    if (user && user.uid) {
-      saveCart(shop, cart, user.uid);
-    }
-  }, [shop, cart, user]);
-
-  useEffect(() => {
-    if (!cart.length) {
-      setSum(0);
-      return;
-    }
-    const newSum = cart.reduce((acc, { price }) => {
-      return acc + price;
-    }, 0);
-    setSum(newSum);
-  }, [cart]);
-
-  const add = (item, rst) => {
-    if (!shop || shop.placeId !== rst.placeId) {
-      setShop(rst);
-      setCart([item]);
-    } else {
-      setCart([...cart, item]);
-    }
+  const addToCart = (product) => {
+    setCart((prevCart) => {
+      const existingItem = prevCart.find((item) => item.id === product.id);
+      if (existingItem) {
+        return prevCart.map((item) =>
+          item.id === product.id
+            ? { ...item, quantity: item.quantity + 1 }
+            : item
+        );
+      }
+      return [...prevCart, { ...product, quantity: 1 }];
+    });
   };
 
-  const clear = () => {
-    setCart([]);
-    setShop(null);
+  const removeFromCart = (product) => {
+    setCart((prevCart) => {
+      const existingItem = prevCart.find((item) => item.id === product.id);
+      if (existingItem.quantity === 1) {
+        return prevCart.filter((item) => item.id !== product.id);
+      }
+      return prevCart.map((item) =>
+        item.id === product.id ? { ...item, quantity: item.quantity - 1 } : item
+      );
+    });
+  };
+
+  const deleteFromCart = (product) => {
+    setCart((prevCart) => prevCart.filter((item) => item.id !== product.id));
   };
 
   return (
     <CartContext.Provider
-      value={{
-        addToCart: add,
-        clearCart: clear,
-        shop,
-        cart,
-        sum,
-      }}
+      value={{ cart, addToCart, removeFromCart, deleteFromCart }}
     >
       {children}
     </CartContext.Provider>

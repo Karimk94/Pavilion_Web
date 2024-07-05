@@ -1,6 +1,6 @@
-import React, { useContext, useState } from "react";
-import { Divider, List, Accordion, AccordionSummary, AccordionDetails, Button } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import { Accordion, AccordionDetails, AccordionSummary, Button, Divider, List } from "@mui/material";
+import { useContext, useState } from "react";
 import styled from "styled-components";
 import { Spacer } from "../../../components/spacer/spacer.component";
 import { SafeArea } from "../../../components/utility/safe-area.component";

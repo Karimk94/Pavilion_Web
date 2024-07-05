@@ -1,13 +1,13 @@
-import React, { useContext, useState } from "react";
+import { Divider, List, ListItem, ListItemText, TextField } from "@mui/material";
+import { useContext, useState } from "react";
 import styled from "styled-components";
-import { Divider, List, ListItem, ListItemText, CircularProgress, Button, TextField } from "@mui/material";
 import { Spacer } from "../../../components/spacer/spacer.component";
 import { Text } from "../../../components/typography/text.component";
 import { SafeArea } from "../../../components/utility/safe-area.component";
 import { CartContext } from "../../../services/cart/cart.context";
 import { payRequest } from "../../../services/checkout/checkout.service";
 import { ShopInfoCard } from "../../shops/components/shop-info-card.component";
-import { CartIconContainer, CartIcon, ClearButton, PayButton, PaymentProcessing } from "../components/checkout.styles";
+import { CartIcon, CartIconContainer, ClearButton, PayButton, PaymentProcessing } from "../components/checkout.styles";
 import { CreditCardInput } from "../components/credit-card.component";
 
 // Styled components for web

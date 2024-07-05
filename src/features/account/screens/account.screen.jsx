@@ -1,12 +1,16 @@
-import React from "react";
-import Lottie from "react-lottie";
-import { ThemeProvider } from "styled-components";
-import { Button, Typography } from "@mui/material";
-import styled from "styled-components";
+import { Button } from "@mui/material";
+import { useState } from "react";
+import { FaEnvelope, FaLockOpen } from "react-icons/fa";
+import styled, { ThemeProvider } from "styled-components";
 import { Spacer } from "../../../components/spacer/spacer.component";
 import { colors } from "../../../infrastructure/theme/colors";
-import animationData from "../../../../assets/watermelon.json";
-import { AccountBackground, AccountContainer, AccountCover, AnimationWrapper, AuthButton, Title } from "../components/account.styles";
+import {
+  AccountBackground,
+  AccountContainer,
+  AccountCover,
+} from "../components/account.styles";
+import LoginScreen from "./login.screen";
+import RegisterScreen from "./register.screen";
 
 // Styled Button for web
 const WebAuthButton = styled(Button)`
@@ -14,45 +18,50 @@ const WebAuthButton = styled(Button)`
     background-color: ${colors.brand.primary};
     color: white;
     padding: ${(props) => props.theme.space[2]};
+    width: 150px
   }
 `;
 
-export const AccountScreen = ({ navigation }) => {
-  const defaultOptions = {
-    loop: true,
-    autoplay: true,
-    animationData: animationData,
-    rendererSettings: {
-      preserveAspectRatio: "xMidYMid slice"
-    }
-  };
+const theme = {
+  space: ["0px", "4px", "8px", "16px", "32px", "64px"],
+  colors: {
+    brand: {
+      primary: "#2182BD",
+    },
+  },
+};
+
+export const AccountScreen = () => {
+  const [currentView, setCurrentView] = useState("default");
 
   return (
     <ThemeProvider theme={theme}>
       <AccountBackground>
         <AccountCover />
-        <AnimationWrapper>
-          <Lottie options={defaultOptions} height="100%" width="100%" />
-        </AnimationWrapper>
-        <Title>Pavilion</Title>
-        <AccountContainer>
-          <WebAuthButton
-            startIcon={<i className="material-icons">lock_open</i>}
-            variant="contained"
-            onClick={() => navigation.navigate("Login")}
-          >
-            Login
-          </WebAuthButton>
-          <Spacer size="large">
+        {currentView === "default" && (
+          <AccountContainer>
             <WebAuthButton
-              startIcon={<i className="material-icons">email</i>}
+              startIcon={<FaLockOpen />}
               variant="contained"
-              onClick={() => navigation.navigate("Register")}
+              onClick={() => setCurrentView("login")}
             >
-              Register
+              Login
             </WebAuthButton>
-          </Spacer>
-        </AccountContainer>
+            <Spacer size="large">
+              <WebAuthButton
+                startIcon={<FaEnvelope />}
+                variant="contained"
+                onClick={() => setCurrentView("register")}
+              >
+                Register
+              </WebAuthButton>
+            </Spacer>
+          </AccountContainer>
+        )}
+        {currentView === "login" && <LoginScreen setView={setCurrentView} />}
+        {currentView === "register" && (
+          <RegisterScreen setView={setCurrentView} />
+        )}
       </AccountBackground>
     </ThemeProvider>
   );

@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { LocationContext } from "../location/location.context";
 import { productsRequest, productsTransform } from "./products.service";
+import { convertCurrency } from "../../utils/currency-converter.js"; // Make sure to import your conversion utility
 
 export const ProductsContext = createContext();
 
@@ -12,25 +13,28 @@ export const ProductsContextProvider = ({ children }) => {
   const [error, setError] = useState(null);
   const { location, getLocation } = useContext(LocationContext);
 
-  const retrieveProducts = (location, key) => {
+  const retrieveProducts = async (location, key) => {
     setIsLoading(true);
     setProducts([]);
 
-      productsRequest(location, key)
-        .then(productsTransform)
-        .then((results) => {
-          setIsLoading(false);
-          setProducts(results.products);
-          setCurrency({
-            currencyName: results.currencyName,
-            currencyCode: results.currencyCode,
-            currencySymbol: results.currencySymbol,
-          });
+    try {
+      const results = await productsRequest(location, key).then(productsTransform);
+      const { currencyName, currencyCode, currencySymbol } = results;
+
+      const convertedProducts = await Promise.all(
+        results.products.map(async (product) => {
+          const convertedPrice = await convertCurrency(product.price, "USD", currencyCode);
+          return { ...product, convertedPrice };
         })
-        .catch((err) => {
-          setIsLoading(false);
-          setError(err);
-        });
+      );
+
+      setIsLoading(false);
+      setProducts(convertedProducts);
+      setCurrency({ currencyName, currencyCode, currencySymbol });
+    } catch (err) {
+      setIsLoading(false);
+      setError(err);
+    }
   };
 
   const onSearch = (searchKeyword) => {
@@ -59,6 +63,7 @@ export const ProductsContextProvider = ({ children }) => {
         search: onSearch,
         isLoading,
         error,
+        keyword
       }}
     >
       {children}

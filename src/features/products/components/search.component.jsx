@@ -1,12 +1,7 @@
-import {
-  Favorite,
-  FavoriteBorder,
-  Search as SearchIcon,
-} from "@mui/icons-material";
+import { Search as SearchIcon } from "@mui/icons-material";
 import { IconButton, TextField } from "@mui/material";
-import React, { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import styled from "styled-components";
-import { AuthenticationContext } from "../../../services/authentication/authentication.context";
 import { ProductsContext } from "../../../services/products/products.context.jsx";
 
 const SearchContainer = styled.div`
@@ -27,22 +22,19 @@ const CustomTextField = styled(TextField)`
 
 export const Search = ({ isFavouritesToggled, onFavouritesToggle }) => {
   const { keyword, search, setKeyword } = useContext(ProductsContext);
-  const { user } = useContext(AuthenticationContext);
   const [searchKeyword, setSearchKeyword] = useState(keyword);
-
-  const onClear = () => setKeyword("");
 
   useEffect(() => {
     setSearchKeyword(keyword);
   }, [keyword]);
 
+  const handleSearch = () => {
+    setKeyword(searchKeyword);
+    search(searchKeyword);
+  };
+
   return (
     <SearchContainer>
-      {user && (
-        <IconButton onClick={onFavouritesToggle}>
-          {isFavouritesToggled ? <Favorite /> : <FavoriteBorder />}
-        </IconButton>
-      )}
       <CustomTextField
         variant="outlined"
         placeholder="Search for a Product, Shop, Category or Country"
@@ -50,12 +42,12 @@ export const Search = ({ isFavouritesToggled, onFavouritesToggle }) => {
         onChange={(e) => setSearchKeyword(e.target.value)}
         onKeyPress={(e) => {
           if (e.key === "Enter") {
-            search(searchKeyword);
+            handleSearch();
           }
         }}
         InputProps={{
           endAdornment: (
-            <IconButton onClick={() => search(searchKeyword)}>
+            <IconButton onClick={handleSearch}>
               <SearchIcon />
             </IconButton>
           ),

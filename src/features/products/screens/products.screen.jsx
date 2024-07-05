@@ -1,5 +1,5 @@
-import React, { useContext, useState } from "react";
-import { useNavigate } from 'react-router-dom';
+import { useContext, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { FavouritesBar } from "../../../components/favourites/favourites-bar.component";
 import { Spacer } from "../../../components/spacer/spacer.component";
@@ -41,6 +41,13 @@ const ProductListContainer = styled.div`
   gap: 1rem;
 `;
 
+const HeaderContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 16px;
+`;
+
 export const ProductsScreen = () => {
   const { error: locationError } = useContext(LocationContext);
   const { isLoading, products, currency, error } = useContext(ProductsContext);
@@ -51,20 +58,23 @@ export const ProductsScreen = () => {
   const navigate = useNavigate();
 
   const handleNavigateToProductDetail = (productId, pageCurrency) => {
-    navigate(`/products/${productId}`,{ state: { pageCurrency } });
+    navigate(`/products/${productId}`, { state: { pageCurrency } });
   };
+
   return (
     <SafeArea>
+      <HeaderContainer>
+        {!isLoading && !hasError && (
+          <Search
+            isFavouritesToggled={isToggled}
+            onFavouritesToggle={() => setIsToggled(!isToggled)}
+          />
+        )}
+      </HeaderContainer>
       {isLoading && (
         <LoadingContainer>
           <LoadingText>Loading...</LoadingText>
         </LoadingContainer>
-      )}
-      {!isLoading && !hasError && (
-        <Search
-          isFavouritesToggled={isToggled}
-          onFavouritesToggle={() => setIsToggled(!isToggled)}
-        />
       )}
       {isToggled && (
         <FavouritesBar

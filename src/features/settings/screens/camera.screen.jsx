@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import { SafeArea } from "../../../components/utility/safe-area.component";
 import { AuthenticationContext } from "../../../services/authentication/authentication.context";
@@ -40,7 +40,9 @@ export const CameraScreen = ({ navigation }) => {
   useEffect(() => {
     async function getPermission() {
       try {
-        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: true,
+        });
         setPermission(true);
         if (cameraRef.current) {
           cameraRef.current.srcObject = stream;

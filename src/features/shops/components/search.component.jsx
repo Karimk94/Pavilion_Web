@@ -1,9 +1,8 @@
-import React, { useContext, useEffect, useState } from "react";
-import styled from "styled-components";
-import { TextField, InputAdornment } from "@mui/material";
-import SearchIcon from "@mui/icons-material/Search";
 import FavoriteIcon from "@mui/icons-material/Favorite";
-import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
+import SearchIcon from "@mui/icons-material/Search";
+import { InputAdornment, TextField } from "@mui/material";
+import { useContext, useEffect, useState } from "react";
+import styled from "styled-components";
 
 import { LocationContext } from "../../../services/location/location.context";
 
@@ -27,7 +26,7 @@ export const Search = ({ isFavouritesToggled, onFavouritesToggle }) => {
         value={searchKeyword}
         onChange={(e) => setSearchKeyword(e.target.value)}
         onKeyPress={(e) => {
-          if (e.key === 'Enter') {
+          if (e.key === "Enter") {
             search(searchKeyword);
           }
         }}

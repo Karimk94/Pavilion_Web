@@ -1,6 +1,8 @@
+import { host } from "./env";
+
 async function sendHttpRequest(url, config) {
   try { 
-    const response = await fetch(url, config);
+    const response = await fetch(`${host}${url}`, config);
 
     const resData = await response.json();
 

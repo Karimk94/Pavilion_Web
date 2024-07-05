@@ -1,10 +1,22 @@
-import React, { useContext, useState } from "react";
-import { CircularProgress, Button, TextField, Typography } from "@mui/material";
+import {
+  Button,
+  CircularProgress,
+  TextField,
+  Typography,
+  IconButton,
+} from "@mui/material";
+import { useContext, useState } from "react";
 import styled from "styled-components";
 import { Spacer } from "../../../components/spacer/spacer.component";
 import { colors } from "../../../infrastructure/theme/colors";
 import { AuthenticationContext } from "../../../services/authentication/authentication.context";
-import { AccountBackground, AccountContainer, AccountCover, ErrorContainer, Title } from "../components/account.styles";
+import { FaChevronLeft } from "react-icons/fa6";
+import {
+  AccountBackground,
+  AccountContainer,
+  AccountCover,
+  ErrorContainer,
+} from "../components/account.styles";
 
 const AuthButton = styled(Button)`
   && {
@@ -19,17 +31,71 @@ const AuthInput = styled(TextField)`
   }
 `;
 
-const RegisterScreen = ({ navigation }) => {
+const BackButton = styled(IconButton)`
+  && {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    color: ${colors.brand.primary};
+  }
+`;
+
+const RegisterScreen = ({ setView }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [repeatedPassword, setRepeatedPassword] = useState("");
+  const [passwordErrors, setPasswordErrors] = useState([]);
   const { onRegister, isLoading, error } = useContext(AuthenticationContext);
+
+  const validatePassword = (value) => {
+    setPassword(value);
+    const errors = [];
+    if (!/(?=.*[a-z])/.test(value)) {
+      errors.push("At least one lowercase letter");
+    }
+    if (!/(?=.*[A-Z])/.test(value)) {
+      errors.push("At least one uppercase letter");
+    }
+    if (!/(?=.*[0-9])/.test(value)) {
+      errors.push("At least one digit");
+    }
+    if (!/(?=.*[!@#\\$%\\^&\\*])/.test(value)) {
+      errors.push("At least one special character");
+    }
+    if (!/.{8,}/.test(value)) {
+      errors.push("Minimum 8 characters");
+    }
+    setPasswordErrors(errors);
+  };
+
+  const validateRepeatedPassword = (value) => {
+    setRepeatedPassword(value);
+  };
+
+  const isFormValid = () => {
+    return password === repeatedPassword && passwordErrors.length === 0;
+  };
+
+  const register = () => {
+    if (isFormValid()) {
+      onRegister(email, password);
+    }
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      onLogin(email, password);
+    }
+  };
+
 
   return (
     <AccountBackground>
       <AccountCover />
-      <Title>Pavilion</Title>
-      <AccountContainer>
+      <BackButton onClick={() => setView("default")}>
+        <FaChevronLeft />
+      </BackButton>
+      <AccountContainer onKeyPress={handleKeyPress}>
         <AuthInput
           label="E-mail"
           value={email}
@@ -45,7 +111,17 @@ const RegisterScreen = ({ navigation }) => {
             type="password"
             autoComplete="current-password"
             variant="outlined"
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={(e) => validatePassword(e.target.value)}
+            error={passwordErrors.length > 0}
+            helperText={
+              passwordErrors.length > 0 ? (
+                <ul>
+                  {passwordErrors.map((err, index) => (
+                    <li key={index}>{err}</li>
+                  ))}
+                </ul>
+              ) : null
+            }
           />
         </Spacer>
         <Spacer size="large">
@@ -55,7 +131,13 @@ const RegisterScreen = ({ navigation }) => {
             type="password"
             autoComplete="current-password"
             variant="outlined"
-            onChange={(e) => setRepeatedPassword(e.target.value)}
+            onChange={(e) => validateRepeatedPassword(e.target.value)}
+            error={repeatedPassword && password !== repeatedPassword}
+            helperText={
+              repeatedPassword && password !== repeatedPassword
+                ? "Passwords do not match"
+                : null
+            }
           />
         </Spacer>
         {error && (
@@ -69,7 +151,8 @@ const RegisterScreen = ({ navigation }) => {
           {!isLoading ? (
             <AuthButton
               variant="contained"
-              onClick={() => onRegister(email, password, repeatedPassword)}
+              onClick={register}
+              disabled={!isFormValid()}
             >
               Register
             </AuthButton>
@@ -78,11 +161,6 @@ const RegisterScreen = ({ navigation }) => {
           )}
         </Spacer>
       </AccountContainer>
-      <Spacer size="large">
-        <AuthButton variant="contained" onClick={() => navigation.goBack()}>
-          Back
-        </AuthButton>
-      </Spacer>
     </AccountBackground>
   );
 };

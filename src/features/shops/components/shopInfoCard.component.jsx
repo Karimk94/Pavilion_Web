@@ -1,7 +1,6 @@
-import React from "react";
+import { CardContent, CardMedia, Card as MuiCard } from "@mui/material";
 import { Svg } from "react-svg";
 import styled from "styled-components";
-import { Card as MuiCard, CardContent, CardMedia } from "@mui/material";
 import open from "../../../../assets/open.svg";
 import star from "../../../../assets/star.svg";
 import { Favourite } from "../../../components/favourite/favourite.component";
