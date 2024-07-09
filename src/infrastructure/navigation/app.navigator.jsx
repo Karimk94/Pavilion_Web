@@ -9,6 +9,7 @@ import {
 } from "react-router-dom";
 import styled from "styled-components";
 import CartButton from "../../components/cart/cart-button.component";
+import AccountDetails from "../../features/account/screens/account-details.screen";
 import CartModal from "../../features/cart/screens/cart-modal.component";
 import { MapScreen } from "../../features/map/screens/map.screen";
 import SettingsModal from "../../features/settings/screens/settings.screen";
@@ -87,7 +88,7 @@ const AppNavigator = () => {
   const { currency } = useContext(ProductsContext);
   const { user } = useContext(AuthenticationContext);
 
-  const defaultProfilePicture = "images/users/default.jpg";
+  const defaultProfilePicture = "/users/default.jpg";
 
   return (
     <>
@@ -111,7 +112,7 @@ const AppNavigator = () => {
         <ProfileIconContainer onClick={() => setIsSettingsOpen(true)}>
           {user ? (
             <ProfileImage
-              src={user.photoURL || defaultProfilePicture}
+              src={`images/${user.photoUrl || defaultProfilePicture}`}
               alt="Profile"
             />
           ) : (
@@ -132,6 +133,7 @@ const AppNavigator = () => {
         <Route path="/products/*" element={<ProductsNavigator />} />
         <Route path="/shops/*" element={<ShopsNavigator />} />
         <Route path="/map/*" element={<MapScreen />} />
+        <Route path="/accountdetails/*" element={<AccountDetails />} />
         <Route path="/" element={<Navigate to="/products" replace />} />
       </Routes>
     </>

@@ -1,7 +1,7 @@
 import {
   Avatar,
   List,
-  ListItem,
+  ListItemButton,
   ListItemAvatar,
   ListItemText,
 } from "@mui/material";
@@ -15,6 +15,7 @@ import { AuthenticationContext } from "../../../services/authentication/authenti
 import { colors } from "../../../infrastructure/theme/colors";
 import { AccountScreen } from "../../../features/account/screens/account.screen";
 import { FaHeart, FaShoppingCart, FaHistory, FaSignOutAlt } from "react-icons/fa";
+import { FaImagePortrait } from "react-icons/fa6";
 
 Modal.setAppElement("#root");
 
@@ -54,7 +55,7 @@ const TransparentSafeArea = styled.div`
   z-index: 2; /* Ensure the content is above the background but below the close button */
 `;
 
-const SettingsItem = styled(ListItem)({
+const SettingsItem = styled(ListItemButton)({
   padding: "1em",
   backgroundColor: "rgba(255, 255, 255, 0.4)",
   marginBottom: "1em",
@@ -68,9 +69,22 @@ const AvatarContainer = styled("div")({
   marginBottom: "2em",
 });
 
+const StyledEmail = styled(Text)`
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: bold;
+  color: ${colors.brand.primary};
+  text-align: center;
+`;
+
 const SettingsModal = ({ isOpen, onClose }) => {
   const { onLogout, user } = useContext(AuthenticationContext);
   const navigate = useNavigate();
+
+  const handleItemClick = (path) => {
+    onClose();
+    navigate(path);
+  };
 
   return (
     <SettingsModalContainer
@@ -85,27 +99,46 @@ const SettingsModal = ({ isOpen, onClose }) => {
             <AvatarContainer>
               <Avatar
                 alt="User Avatar"
-                src={user.photoURL || "images/users/default.jpg"} // Update with user photo URL
+                src={`images/${user.photoUrl || '/users/default.jpg'}`}
                 sx={{ width: 100, height: 100, bgcolor: colors.brand.primary }}
               />
               <Spacer position="top" size="large">
-                <Text variant="label">{user?.email}</Text>
+                <StyledEmail>{user?.email}</StyledEmail>
               </Spacer>
             </AvatarContainer>
             <List>
-              <SettingsItem button onClick={() => navigate("/favourites")}>
+              <SettingsItem button onClick={() => handleItemClick("/orders")}>
                 <ListItemAvatar>
-                  <Avatar sx={{ bgcolor: colors.ui.error }}>
+                  <Avatar sx={{ bgcolor: colors.ui.secondary }}>
+                    <FaHistory />
+                  </Avatar>
+                </ListItemAvatar>
+                <ListItemText primary="Orders" />
+              </SettingsItem>
+              <Spacer />
+              <SettingsItem button onClick={() => handleItemClick("/favourites")}>
+                <ListItemAvatar>
+                  <Avatar sx={{ bgcolor: colors.ui.secondary }}>
                     <FaHeart />
                   </Avatar>
                 </ListItemAvatar>
                 <ListItemText
                   primary="Favourites"
-                  secondary="View your favourites"
                 />
               </SettingsItem>
               <Spacer />
-              <SettingsItem button onClick={() => null}>
+              <SettingsItem button onClick={() => handleItemClick("/accountdetails")}>
+                <ListItemAvatar>
+                  <Avatar sx={{ bgcolor: colors.ui.secondary }}>
+                    <FaImagePortrait />
+                  </Avatar>
+                </ListItemAvatar>
+                <ListItemText
+                  primary="Account Details"
+                />
+              </SettingsItem>
+              <Spacer />
+              <SettingsItem button onClick={() => handleItemClick("/payment")}>
                 <ListItemAvatar>
                   <Avatar sx={{ bgcolor: colors.ui.secondary }}>
                     <FaShoppingCart />
@@ -114,19 +147,10 @@ const SettingsModal = ({ isOpen, onClose }) => {
                 <ListItemText primary="Payment" />
               </SettingsItem>
               <Spacer />
-              <SettingsItem button onClick={() => null}>
-                <ListItemAvatar>
-                  <Avatar sx={{ bgcolor: colors.ui.secondary }}>
-                    <FaHistory />
-                  </Avatar>
-                </ListItemAvatar>
-                <ListItemText primary="Past Orders" />
-              </SettingsItem>
-              <Spacer />
               {user && (
-                <SettingsItem button onClick={onLogout}>
+                <SettingsItem button onClick={() => {onLogout()}}>
                   <ListItemAvatar>
-                    <Avatar sx={{ bgcolor: colors.ui.secondary }}>
+                    <Avatar sx={{ bgcolor: colors.ui.error }}>
                       <FaSignOutAlt />
                     </Avatar>
                   </ListItemAvatar>
