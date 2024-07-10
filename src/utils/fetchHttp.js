@@ -1,7 +1,7 @@
 import { host } from "./env";
 
 async function sendHttpRequest(url, config) {
-  try { 
+  try {
     const response = await fetch(`${host}${url}`, config);
 
     const resData = await response.json();
@@ -11,7 +11,6 @@ async function sendHttpRequest(url, config) {
     }
 
     return resData;
-
   } catch (error) {
     console.error(error);
     return null;
@@ -20,14 +19,28 @@ async function sendHttpRequest(url, config) {
 
 export default async function fetchHttp(url, config) {
   let responseData = null;
-  let requestError = null;
+  let requestErrors = [];
+
+  if (!config) {
+    const myHeaders = new Headers();
+    myHeaders.append("Content-Type", "application/json");
+
+    const raw = JSON.stringify({});
+
+    config = {
+      method: "POST",
+      headers: myHeaders,
+      body: raw,
+      redirect: "follow",
+    };
+  }
 
   try {
     const data = await sendHttpRequest(url, config);
 
     if (!data?.Succeeded && data?.Errors?.length > 0) {
       data?.Errors?.forEach((err) => {
-        console.error(
+        requestErrors.push(
           err.Message?.toLowerCase() == "badrequest"
             ? "Error Retrieving data"
             : err.Message
@@ -43,7 +56,7 @@ export default async function fetchHttp(url, config) {
   }
 
   return {
-    data: responseData,
-    error: requestError,
+    response: responseData,
+    errors: requestErrors,
   };
 }

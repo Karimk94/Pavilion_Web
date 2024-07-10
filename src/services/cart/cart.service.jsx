@@ -13,7 +13,7 @@ export const fetchUserCart = async (userId) => {
     redirect: "follow",
   };
 
-  const response = await fetchHttp(`cart/getCart`, requestOptions);
+  const { response, errors } = await fetchHttp(`cart/getCart`, requestOptions);
   return response.data;
 };
 
@@ -30,5 +30,5 @@ export const saveUserCart = async (userId, cart) => {
     redirect: "follow",
   };
 
-  await fetchHttp('cart/saveCart', requestOptions);
+  await fetchHttp("cart/saveCart", requestOptions);
 };

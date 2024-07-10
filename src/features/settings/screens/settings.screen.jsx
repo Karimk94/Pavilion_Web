@@ -1,21 +1,26 @@
 import {
   Avatar,
   List,
-  ListItemButton,
   ListItemAvatar,
+  ListItemButton,
   ListItemText,
 } from "@mui/material";
-import { styled } from "styled-components";
 import { useContext } from "react";
+import {
+  FaHeart,
+  FaHistory,
+  FaShoppingCart,
+  FaSignOutAlt,
+} from "react-icons/fa";
+import { FaImagePortrait } from "react-icons/fa6";
 import Modal from "react-modal";
 import { useNavigate } from "react-router-dom";
+import { styled } from "styled-components";
 import { Spacer } from "../../../components/spacer/spacer.component";
 import { Text } from "../../../components/typography/text.component";
-import { AuthenticationContext } from "../../../services/authentication/authentication.context";
-import { colors } from "../../../infrastructure/theme/colors";
 import { AccountScreen } from "../../../features/account/screens/account.screen";
-import { FaHeart, FaShoppingCart, FaHistory, FaSignOutAlt } from "react-icons/fa";
-import { FaImagePortrait } from "react-icons/fa6";
+import { colors } from "../../../infrastructure/theme/colors";
+import { AuthenticationContext } from "../../../services/authentication/authentication.context";
 
 Modal.setAppElement("#root");
 
@@ -77,7 +82,7 @@ const StyledEmail = styled(Text)`
   text-align: center;
 `;
 
-const SettingsModal = ({ isOpen, onClose }) => {
+const SettingsModal = ({ isOpen = false, onClose }) => {
   const { onLogout, user } = useContext(AuthenticationContext);
   const navigate = useNavigate();
 
@@ -99,7 +104,7 @@ const SettingsModal = ({ isOpen, onClose }) => {
             <AvatarContainer>
               <Avatar
                 alt="User Avatar"
-                src={`images/${user.photoUrl || '/users/default.jpg'}`}
+                src={`images/${user.photoUrl || "/users/default.jpg"}`}
                 sx={{ width: 100, height: 100, bgcolor: colors.brand.primary }}
               />
               <Spacer position="top" size="large">
@@ -116,26 +121,28 @@ const SettingsModal = ({ isOpen, onClose }) => {
                 <ListItemText primary="Orders" />
               </SettingsItem>
               <Spacer />
-              <SettingsItem button onClick={() => handleItemClick("/favourites")}>
+              <SettingsItem
+                button
+                onClick={() => handleItemClick("/favourites")}
+              >
                 <ListItemAvatar>
                   <Avatar sx={{ bgcolor: colors.ui.secondary }}>
                     <FaHeart />
                   </Avatar>
                 </ListItemAvatar>
-                <ListItemText
-                  primary="Favourites"
-                />
+                <ListItemText primary="Favourites" />
               </SettingsItem>
               <Spacer />
-              <SettingsItem button onClick={() => handleItemClick("/accountdetails")}>
+              <SettingsItem
+                button
+                onClick={() => handleItemClick("/accountdetails")}
+              >
                 <ListItemAvatar>
                   <Avatar sx={{ bgcolor: colors.ui.secondary }}>
                     <FaImagePortrait />
                   </Avatar>
                 </ListItemAvatar>
-                <ListItemText
-                  primary="Account Details"
-                />
+                <ListItemText primary="Account Details" />
               </SettingsItem>
               <Spacer />
               <SettingsItem button onClick={() => handleItemClick("/payment")}>
@@ -148,7 +155,12 @@ const SettingsModal = ({ isOpen, onClose }) => {
               </SettingsItem>
               <Spacer />
               {user && (
-                <SettingsItem button onClick={() => {onLogout()}}>
+                <SettingsItem
+                  button
+                  onClick={() => {
+                    onLogout();
+                  }}
+                >
                   <ListItemAvatar>
                     <Avatar sx={{ bgcolor: colors.ui.error }}>
                       <FaSignOutAlt />

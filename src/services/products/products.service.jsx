@@ -11,7 +11,7 @@ export const productsRequest = async (loc, key) => {
   myHeaders.append("Content-Type", "application/json");
 
   //if (user) myHeaders.append("Authorization", user.token); *add later when token will be added to user
-  
+
   const raw = JSON.stringify({ Iso: loc, Keyword: key });
 
   const requestOptions = {
@@ -21,12 +21,12 @@ export const productsRequest = async (loc, key) => {
     redirect: "follow",
   };
 
-  const { data, error } = await fetchHttp(
-    'Product/getproducts',
+  const { response, errors } = await fetchHttp(
+    "Product/getproducts",
     requestOptions
   );
-  if (data) {
-    return data;
+  if (response) {
+    return response;
   } else {
     return error;
   }

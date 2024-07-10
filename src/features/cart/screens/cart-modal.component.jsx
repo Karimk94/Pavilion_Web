@@ -121,7 +121,7 @@ const WarningButton = styled.button`
   }
 `;
 
-const CartModal = ({ isOpen, onClose, currency }) => {
+const CartModal = ({ isOpen = false, onClose, currency }) => {
   const { cart, addToCart, removeFromCart, deleteFromCart } =
     useContext(CartContext);
   const [warningItem, setWarningItem] = useState(null);

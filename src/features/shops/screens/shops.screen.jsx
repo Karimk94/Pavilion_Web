@@ -1,4 +1,4 @@
-import { CircularProgress, List, ListItem } from "@mui/material";
+import { List, ListItem } from "@mui/material";
 import { useContext, useState } from "react";
 import styled from "styled-components";
 import { FadeInView } from "../../../components/animations/fade.animation";
@@ -12,10 +12,7 @@ import { LocationContext } from "../../../services/location/location.context";
 import { ShopsContext } from "../../../services/shops/shops.context";
 import { Search } from "../components/search.component";
 import { ShopInfoCard } from "../components/shop-info-card.component";
-
-const Loading = styled(CircularProgress)`
-  margin-left: -25px;
-`;
+import { TailSpin } from "react-loader-spinner";
 
 const LoadingContainer = styled.div`
   position: absolute;
@@ -39,7 +36,12 @@ export const ShopsScreen = ({ navigation }) => {
     <SafeArea>
       {isLoading && (
         <LoadingContainer>
-          <Loading size={50} color={colors.brand.primary} />
+          <TailSpin
+            height="100"
+            width="100"
+            color={colors.brand.primary}
+            ariaLabel="loading"
+          />
         </LoadingContainer>
       )}
       <Search
@@ -47,7 +49,10 @@ export const ShopsScreen = ({ navigation }) => {
         onFavouritesToggle={() => setIsToggled(!isToggled)}
       />
       {isToggled && (
-        <FavouritesBar favourites={favourites} onNavigate={navigation.navigate} />
+        <FavouritesBar
+          favourites={favourites}
+          onNavigate={navigation.navigate}
+        />
       )}
       {hasError && (
         <Spacer position="left" size="large">
@@ -60,9 +65,7 @@ export const ShopsScreen = ({ navigation }) => {
             <ListItem
               key={item.name}
               button
-              onClick={() =>
-                navigation.navigate("ShopDetail", { shop: item })
-              }
+              onClick={() => navigation.navigate("ShopDetail", { shop: item })}
             >
               <Spacer position="bottom" size="large">
                 <FadeInView>

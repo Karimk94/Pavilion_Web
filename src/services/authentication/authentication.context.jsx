@@ -7,7 +7,7 @@ export const AuthenticationContext = createContext();
 export const AuthenticationContextProvider = ({ children }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [user, setUser] = useState(null);
-  const [error, setError] = useState(null);
+  const [errors, setErrors] = useState([]);
 
   const userTransform = (results = []) => {
     return pascalToCamel(results);
@@ -18,74 +18,71 @@ export const AuthenticationContextProvider = ({ children }) => {
     const storedUser = localStorage.getItem("user");
     if (storedUser) {
       setUser(JSON.parse(storedUser));
-    } 
+    }
   }, []);
 
   const onLogin = async (email, password) => {
-
     setIsLoading(true);
-    setError(null);
+    setErrors([]);
 
     try {
       const myHeaders = new Headers();
       myHeaders.append("Content-Type", "application/json");
       const raw = JSON.stringify({ Username: email, Password: password });
-    
+
       const requestOptions = {
         method: "POST",
         headers: myHeaders,
         body: raw,
         redirect: "follow",
       };
-    
-      const { data, error } = await fetchHttp(
-        'User/login',
+
+      const { response, errors } = await fetchHttp(
+        "User/login",
         requestOptions
       ).then(userTransform);
-
-      if (data.isAuthenticated) { 
-        setUser(data.user);
-        localStorage.setItem("user", JSON.stringify(data.user));
+      if (response?.isAuthenticated) {
+        setUser(response.user);
+        localStorage.setItem("user", JSON.stringify(response.user));
       } else {
-        setError(error || "Login failed");
+        setErrors(errors || ["Login failed"]);
       }
     } catch (err) {
-      setError("An error occurred. Please try again.");
+      setErrors(["An error occurred. Please try again."]);
     } finally {
       setIsLoading(false);
     }
   };
 
   const onRegister = async (email, password) => {
-    
     setIsLoading(true);
-    setError(null);
+    setErrors([]);
 
     try {
       const myHeaders = new Headers();
       myHeaders.append("Content-Type", "application/json");
       const raw = JSON.stringify({ Email: email, Password: password });
-    
+
       const requestOptions = {
         method: "POST",
         headers: myHeaders,
         body: raw,
         redirect: "follow",
       };
-    
-      const { data, error } = await fetchHttp(
-        'User/register',
+
+      const { response, errors } = await fetchHttp(
+        "User/register",
         requestOptions
       ).then(userTransform);
 
-      if (data.isAuthenticated) { 
-        setUser(data.user);
-        localStorage.setItem("user", JSON.stringify(data.user));
+      if (response?.isAuthenticated) {
+        setUser(response.user);
+        localStorage.setItem("user", JSON.stringify(response.user));
       } else {
-        setError(error || "Register failed");
+        setErrors(errors || ["Register failed"]);
       }
     } catch (err) {
-      setError("An error occurred. Please try again.");
+      setErrors(["An error occurred. Please try again."]);
     } finally {
       setIsLoading(false);
     }
@@ -93,13 +90,12 @@ export const AuthenticationContextProvider = ({ children }) => {
 
   const onLogout = async () => {
     setIsLoading(true);
-    setError(null);
+    setErrors([]);
     try {
-      await fetchHttp("/api/logout", { method: "POST" });
       setUser(null);
       localStorage.removeItem("user");
     } catch (err) {
-      setError("An error occurred. Please try again.");
+      setErrors(["An error occurred. Please try again."]);
     } finally {
       setIsLoading(false);
     }
@@ -111,7 +107,7 @@ export const AuthenticationContextProvider = ({ children }) => {
         isAuthenticated: !!user,
         user,
         isLoading,
-        error,
+        errors,
         onLogin,
         onRegister,
         onLogout,

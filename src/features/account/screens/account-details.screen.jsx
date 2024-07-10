@@ -1,9 +1,12 @@
 import React, { useContext, useState, useEffect } from "react";
-import styled from "styled-components";
 import { Avatar, Button, MenuItem, TextField, Typography } from "@mui/material";
-import { AuthenticationContext } from "../../../services/authentication/authentication.context";
+import { TailSpin } from "react-loader-spinner";
+import styled from "styled-components";
 import { Spacer } from "../../../components/spacer/spacer.component";
 import { colors } from "../../../infrastructure/theme/colors";
+import { AuthenticationContext } from "../../../services/authentication/authentication.context";
+import { pascalToCamel } from "../../../utils/array-transform";
+import fetchHttp from "../../../utils/fetchHttp";
 
 const AccountDetailsContainer = styled.div`
   display: flex;
@@ -47,6 +50,10 @@ const SaveButton = styled(Button)`
   }
 `;
 
+const HiddenInput = styled.input`
+  display: none;
+`;
+
 const AccountDetails = () => {
   const { user } = useContext(AuthenticationContext);
   const [userDetails, setUserDetails] = useState({
@@ -60,10 +67,15 @@ const AccountDetails = () => {
     city: "",
     state: "",
     poBox: "",
-    photoURL: "",
+    photoUrl: "",
   });
+  const [countries, setCountries] = useState([]);
+  const [isCountriesLoading, setIsCountriesLoading] = useState(false);
+  const [tempPhoto, setTempPhoto] = useState("");
 
-  const countries = ["USA", "Canada", "UK"]; // Example country list
+  const countriesTransform = (results = []) => {
+    return pascalToCamel(results);
+  };
 
   useEffect(() => {
     if (user) {
@@ -78,7 +90,7 @@ const AccountDetails = () => {
         city: user.city || "",
         state: user.state || "",
         poBox: user.poBox || "",
-        photoURL: user.photoURL || "images/users/default.jpg",
+        photoUrl: user.photoUrl || "users/default.jpg",
       });
     }
   }, [user]);
@@ -91,17 +103,74 @@ const AccountDetails = () => {
     }));
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
+    const detailsToSave = {
+      ...userDetails,
+      photoUrl: tempPhoto || userDetails.photoUrl,
+    };
+    console.log("Saved user details:", detailsToSave);
+
     // Save the updated user details to the backend
-    console.log("Saved user details:", userDetails);
+    try {
+      const response = await fetchHttp("/user/save", {
+        method: "POST",
+        body: JSON.stringify(detailsToSave),
+      });
+      if (response.success) {
+        console.log("User details saved successfully.");
+      } else {
+        console.error("Failed to save user details:", response.error);
+      }
+    } catch (error) {
+      console.error("Error saving user details:", error);
+    }
+  };
+
+  const handleCountryFocus = async () => {
+    if (countries.length === 0) {
+      setIsCountriesLoading(true);
+      try {
+        const response = await fetchHttp("Country/getcountries");
+        const transformedCountries = countriesTransform(response.data);
+        setCountries(transformedCountries);
+      } catch (error) {
+        console.error("Failed to fetch countries:", error);
+      } finally {
+        setIsCountriesLoading(false);
+      }
+    }
+  };
+
+  const handlePhotoUpload = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setTempPhoto(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   return (
     <AccountDetailsContainer>
-      <Avatar
-        alt="User Avatar"
-        src={userDetails.photoURL}
-        sx={{ width: 100, height: 100, bgcolor: colors.brand.primary }}
+      <label htmlFor="photo-upload">
+        <Avatar
+          alt="User Avatar"
+          src={tempPhoto || `/images/${userDetails.photoUrl}`}
+          sx={{
+            width: 100,
+            height: 100,
+            bgcolor: colors.brand.primary,
+            cursor: "pointer",
+          }}
+        />
+      </label>
+      <HiddenInput
+        id="photo-upload"
+        type="file"
+        accept="image/*"
+        onChange={handlePhotoUpload}
       />
       <Spacer position="top" size="large">
         <Typography variant="h5">{user?.email}</Typography>
@@ -188,10 +257,21 @@ const AccountDetails = () => {
             onChange={handleChange}
             variant="outlined"
             select
+            onFocus={handleCountryFocus}
+            InputProps={{
+              endAdornment: isCountriesLoading && (
+                <TailSpin
+                  height="50"
+                  width="50"
+                  color={colors.brand.primary}
+                  ariaLabel="loading"
+                />
+              ),
+            }}
           >
             {countries.map((country) => (
-              <MenuItem key={country} value={country}>
-                {country}
+              <MenuItem key={country.code} value={country.name}>
+                {country.name}
               </MenuItem>
             ))}
           </StyledTextField>

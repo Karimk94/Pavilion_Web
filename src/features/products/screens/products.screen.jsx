@@ -1,4 +1,5 @@
 import { useContext, useState } from "react";
+import { TailSpin } from "react-loader-spinner";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { FavouritesBar } from "../../../components/favourites/favourites-bar.component";
@@ -17,11 +18,6 @@ const LoadingContainer = styled.div`
   justify-content: center;
   align-items: center;
   height: 100vh;
-`;
-
-const LoadingText = styled.div`
-  font-size: 24px;
-  color: ${colors.brand.primary};
 `;
 
 const ProductItem = styled.div`
@@ -73,7 +69,12 @@ export const ProductsScreen = () => {
       </HeaderContainer>
       {isLoading && (
         <LoadingContainer>
-          <LoadingText>Loading...</LoadingText>
+          <TailSpin
+            height="100"
+            width="100"
+            color={colors.brand.primary}
+            ariaLabel="loading"
+          />
         </LoadingContainer>
       )}
       {isToggled && (
@@ -87,7 +88,7 @@ export const ProductsScreen = () => {
           <Text variant="error">Something went wrong retrieving the data</Text>
         </Spacer>
       )}
-      {!hasError && (
+      {!hasError && products?.length > 0 && (
         <ProductListContainer>
           {products.map((item) => (
             <ProductItem

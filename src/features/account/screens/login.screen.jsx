@@ -1,7 +1,8 @@
-import { Button, CircularProgress, TextField, Typography, IconButton } from "@mui/material";
+import { Button, IconButton, TextField, Typography } from "@mui/material";
 import { useContext, useState } from "react";
-import styled from "styled-components";
 import { FaChevronLeft } from "react-icons/fa6";
+import { TailSpin } from "react-loader-spinner";
+import styled from "styled-components";
 import { Spacer } from "../../../components/spacer/spacer.component";
 import { AuthenticationContext } from "../../../services/authentication/authentication.context";
 import {
@@ -10,6 +11,7 @@ import {
   AccountCover,
   ErrorContainer,
 } from "../components/account.styles";
+import { colors } from "../../../infrastructure/theme/colors";
 
 const WebAuthButton = styled(Button)`
   && {
@@ -38,10 +40,10 @@ const BackButton = styled(IconButton)`
 const LoginScreen = ({ setView }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const { onLogin, error, isLoading } = useContext(AuthenticationContext);
+  const { onLogin, errors, isLoading } = useContext(AuthenticationContext);
 
   const handleKeyPress = (e) => {
-    if (e.key === 'Enter') {
+    if (e.key === "Enter") {
       onLogin(email, password);
     }
   };
@@ -71,11 +73,13 @@ const LoginScreen = ({ setView }) => {
             onChange={(e) => setPassword(e.target.value)}
           />
         </Spacer>
-        {error && (
+        {errors?.length > 0 && (
           <ErrorContainer size="large">
-            <Typography variant="body2" color="error">
-              {error}
-            </Typography>
+            {errors.map((error) => (
+              <Typography variant="body2" color="error">
+                {error}
+              </Typography>
+            ))}
           </ErrorContainer>
         )}
         <Spacer size="large">
@@ -87,7 +91,12 @@ const LoginScreen = ({ setView }) => {
               Login
             </WebAuthButton>
           ) : (
-            <CircularProgress color="primary" />
+            <TailSpin
+              height="50"
+              width="50"
+              color={colors.brand.primary}
+              ariaLabel="loading"
+            />
           )}
         </Spacer>
       </AccountContainer>

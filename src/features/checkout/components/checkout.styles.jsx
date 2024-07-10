@@ -1,22 +1,13 @@
 import styled from "styled-components";
-import { CircularProgress, Avatar, Button, TextField } from "@mui/material";
+import { Avatar, Button, TextField } from "@mui/material";
 import { colors } from "../../../infrastructure/theme/colors";
+import { TailSpin } from "react-loader-spinner";
 
 export const CartIconContainer = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
   flex: 1;
-`;
-
-export const PaymentProcessing = styled(CircularProgress).attrs({
-  size: 128,
-  color: "primary",
-})`
-  position: absolute;
-  top: 50%;
-  left: 35%;
-  z-index: 1;
 `;
 
 export const CartIcon = styled(Avatar)`

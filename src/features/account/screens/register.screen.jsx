@@ -1,10 +1,6 @@
-import {
-  Button,
-  CircularProgress,
-  TextField,
-  Typography,
-  IconButton,
-} from "@mui/material";
+import { Button, TextField, Typography, IconButton } from "@mui/material";
+import { TailSpin } from "react-loader-spinner";
+
 import { useContext, useState } from "react";
 import styled from "styled-components";
 import { Spacer } from "../../../components/spacer/spacer.component";
@@ -45,27 +41,27 @@ const RegisterScreen = ({ setView }) => {
   const [password, setPassword] = useState("");
   const [repeatedPassword, setRepeatedPassword] = useState("");
   const [passwordErrors, setPasswordErrors] = useState([]);
-  const { onRegister, isLoading, error } = useContext(AuthenticationContext);
+  const { onRegister, isLoading, errors } = useContext(AuthenticationContext);
 
   const validatePassword = (value) => {
     setPassword(value);
-    const errors = [];
+    const pwdErrors = [];
     if (!/(?=.*[a-z])/.test(value)) {
-      errors.push("At least one lowercase letter");
+      pwdErrors.push("At least one lowercase letter");
     }
     if (!/(?=.*[A-Z])/.test(value)) {
-      errors.push("At least one uppercase letter");
+      pwdErrors.push("At least one uppercase letter");
     }
     if (!/(?=.*[0-9])/.test(value)) {
-      errors.push("At least one digit");
+      pwdErrors.push("At least one digit");
     }
     if (!/(?=.*[!@#\\$%\\^&\\*])/.test(value)) {
-      errors.push("At least one special character");
+      pwdErrors.push("At least one special character");
     }
     if (!/.{8,}/.test(value)) {
-      errors.push("Minimum 8 characters");
+      pwdErrors.push("Minimum 8 characters");
     }
-    setPasswordErrors(errors);
+    setPasswordErrors(pwdErrors);
   };
 
   const validateRepeatedPassword = (value) => {
@@ -83,11 +79,10 @@ const RegisterScreen = ({ setView }) => {
   };
 
   const handleKeyPress = (e) => {
-    if (e.key === 'Enter') {
+    if (e.key === "Enter") {
       onLogin(email, password);
     }
   };
-
 
   return (
     <AccountBackground>
@@ -140,11 +135,13 @@ const RegisterScreen = ({ setView }) => {
             }
           />
         </Spacer>
-        {error && (
+        {errors?.length > 0 && (
           <ErrorContainer size="large">
-            <Typography variant="body2" color="error">
-              {error}
-            </Typography>
+            {errors.map((error) => (
+              <Typography variant="body2" color="error">
+                {error}
+              </Typography>
+            ))}
           </ErrorContainer>
         )}
         <Spacer size="large">
@@ -157,7 +154,12 @@ const RegisterScreen = ({ setView }) => {
               Register
             </AuthButton>
           ) : (
-            <CircularProgress color="primary" />
+            <TailSpin
+              height="50"
+              width="50"
+              color={colors.brand.primary}
+              ariaLabel="loading"
+            />
           )}
         </Spacer>
       </AccountContainer>

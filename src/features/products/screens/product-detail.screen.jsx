@@ -1,16 +1,14 @@
 import { useContext, useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
+import { TailSpin } from "react-loader-spinner";
 import styled from "styled-components";
-import { Spacer } from "../../../components/spacer/spacer.component";
 import { SafeArea } from "../../../components/utility/safe-area.component";
 import { colors } from "../../../infrastructure/theme/colors";
 import { CartContext } from "../../../services/cart/cart.context";
 import { ProductsContext } from "../../../services/products/products.context";
 import { pascalToCamel } from "../../../utils/array-transform";
-import { host } from "../../../utils/env";
 import fetchHttp from "../../../utils/fetchHttp";
 import ProductInfoCard from "../components/product-info-card.component";
-import { OrderButton } from "../components/product-list.styles";
 
 const LoadingContainer = styled.div`
   display: flex;
@@ -35,13 +33,12 @@ const OrderButtonWrapper = styled.div`
 
 const ProductDetailScreen = () => {
   const { productId } = useParams();
-  const navigate = useNavigate();
   const { addToCart } = useContext(CartContext);
   const { currency } = useContext(ProductsContext);
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  const productsTransform = (results = []) => {
+  const productsTransform = (results = {}) => {
     return pascalToCamel(results);
   };
 
@@ -61,12 +58,13 @@ const ProductDetailScreen = () => {
       };
 
       try {
-        const response = await fetchHttp(
+        const { response, errors } = await fetchHttp(
           `Product/getproductbyid`,
           requestOptions
         );
-        const data = productsTransform(response.data);
-        setProduct(data);
+
+        const resdata = productsTransform(response);
+        setProduct(resdata);
       } catch (error) {
         console.error("Error fetching product:", error);
       } finally {
@@ -81,7 +79,12 @@ const ProductDetailScreen = () => {
     <SafeArea>
       {loading ? (
         <LoadingContainer>
-          <LoadingText>Loading...</LoadingText>
+          <TailSpin
+            height="100"
+            width="100"
+            color={colors.brand.primary}
+            ariaLabel="loading"
+          />
         </LoadingContainer>
       ) : (
         <>
