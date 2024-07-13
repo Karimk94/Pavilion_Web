@@ -23,7 +23,16 @@ const LoadingContainer = styled.div`
 const ProductItem = styled.div`
   cursor: pointer;
   margin-bottom: 16px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s, box-shadow 0.2s;
+  position: relative;
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+  }
 `;
+
+
 
 const ProductListContainer = styled.div`
   padding: 16px;

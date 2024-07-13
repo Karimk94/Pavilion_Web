@@ -106,21 +106,23 @@ const DescriptionText = styled(Text)`
 `;
 
 const NotificationContainer = styled.div`
-  position: fixed;
-  top: 75px;
-  right: 50px;
+  position: absolute;
+  top: 10px;
+  right: 5px;
+  left: 5px;
   background: rgba(0, 0, 0, 0.8);
   color: white;
   padding: 10px 20px;
   border-radius: 5px;
-  z-index: 1000;
+  z-index: 3;
   display: flex;
   align-items: center;
   justify-content: center;
   visibility: ${(props) => (props.show ? "visible" : "hidden")};
-  opacity: ${(props) => (props.show ? 1 : 0)};
+  opacity: ${(props) => (props.show ? 0.7 : 0)};
   transition: visibility 0s, opacity 0.5s linear;
 `;
+
 
 const ProductInfoCard = ({ product = {}, currency = {}, isDetail = false }) => {
   const navigate = useNavigate();
