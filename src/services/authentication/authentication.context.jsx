@@ -1,6 +1,7 @@
 import { createContext, useEffect, useState } from "react";
 import { pascalToCamel } from "../../utils/array-transform";
 import fetchHttp from "../../utils/fetchHttp";
+import { createRequestOptions } from "../../utils/request-options";
 
 export const AuthenticationContext = createContext();
 
@@ -26,16 +27,8 @@ export const AuthenticationContextProvider = ({ children }) => {
     setErrors([]);
 
     try {
-      const myHeaders = new Headers();
-      myHeaders.append("Content-Type", "application/json");
-      const raw = JSON.stringify({ Username: email, Password: password });
-
-      const requestOptions = {
-        method: "POST",
-        headers: myHeaders,
-        body: raw,
-        redirect: "follow",
-      };
+      const raw = { Username: email, Password: password };
+      const requestOptions = createRequestOptions(raw);
 
       const { response, errors } = await fetchHttp(
         "User/login",

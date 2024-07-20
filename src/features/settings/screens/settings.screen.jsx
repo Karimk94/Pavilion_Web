@@ -32,9 +32,9 @@ const SettingsModalContainer = styled(Modal)`
   color: black;
   font-family: "Roboto", sans-serif;
   position: fixed;
-  top: 60px; /* Adjust to align below the nav */
+  top: 60px;
   right: 10px;
-  z-index: 2;
+  z-index: 3;
 `;
 
 const CloseButton = styled.button`
@@ -46,7 +46,7 @@ const CloseButton = styled.button`
   position: absolute;
   top: 10px;
   right: 10px;
-  z-index: 3; /* Ensure the close button is above other elements */
+  z-index: 4;
 
   &:hover {
     color: ${(props) => props.theme.colors.ui.secondary};
@@ -57,7 +57,7 @@ const TransparentSafeArea = styled.div`
   background-color: "transparent";
   padding: 1em;
   position: relative; /* Added to ensure child elements are positioned correctly */
-  z-index: 2; /* Ensure the content is above the background but below the close button */
+  z-index: 3;
 `;
 
 const SettingsItem = styled(ListItemButton)({

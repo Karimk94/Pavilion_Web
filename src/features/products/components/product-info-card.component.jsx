@@ -114,7 +114,7 @@ const NotificationContainer = styled.div`
   color: white;
   padding: 10px 20px;
   border-radius: 5px;
-  z-index: 3;
+  z-index: 1;
   display: flex;
   align-items: center;
   justify-content: center;

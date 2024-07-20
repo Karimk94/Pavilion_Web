@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
 import { TailSpin } from "react-loader-spinner";
+import { useParams } from "react-router-dom";
 import styled from "styled-components";
 import { SafeArea } from "../../../components/utility/safe-area.component";
 import { colors } from "../../../infrastructure/theme/colors";
@@ -8,6 +8,7 @@ import { CartContext } from "../../../services/cart/cart.context";
 import { ProductsContext } from "../../../services/products/products.context";
 import { pascalToCamel } from "../../../utils/array-transform";
 import fetchHttp from "../../../utils/fetchHttp";
+import { createRequestOptions } from "../../../utils/request-options";
 import ProductInfoCard from "../components/product-info-card.component";
 
 const LoadingContainer = styled.div`
@@ -45,17 +46,9 @@ const ProductDetailScreen = () => {
   useEffect(() => {
     const fetchProduct = async () => {
       setLoading(true);
-      const myHeaders = new Headers();
-      myHeaders.append("Content-Type", "application/json");
 
-      const raw = JSON.stringify({ Id: parseInt(productId) });
-
-      const requestOptions = {
-        method: "POST",
-        headers: myHeaders,
-        body: raw,
-        redirect: "follow",
-      };
+      const raw = { Id: parseInt(productId) };
+      const requestOptions = createRequestOptions(raw);
 
       try {
         const { response, errors } = await fetchHttp(

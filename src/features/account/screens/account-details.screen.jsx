@@ -1,5 +1,13 @@
-import React, { useContext, useState, useEffect } from "react";
-import { Avatar, Button, MenuItem, TextField, Typography } from "@mui/material";
+import { CameraAlt, Upload } from "@mui/icons-material";
+import {
+  Avatar,
+  Button,
+  Menu,
+  MenuItem,
+  TextField,
+  Typography,
+} from "@mui/material";
+import React, { useContext, useEffect, useState } from "react";
 import { TailSpin } from "react-loader-spinner";
 import styled from "styled-components";
 import { Spacer } from "../../../components/spacer/spacer.component";
@@ -7,6 +15,13 @@ import { colors } from "../../../infrastructure/theme/colors";
 import { AuthenticationContext } from "../../../services/authentication/authentication.context";
 import { pascalToCamel } from "../../../utils/array-transform";
 import fetchHttp from "../../../utils/fetchHttp";
+import { createRequestOptions } from "../../../utils/request-options";
+
+const userRoles = [
+  { Id: 3, Name: "Customer", visible: true },
+  { Id: 2, Name: "Shop Owner", visible: true },
+  { Id: 1, Name: "Admin", visible: false },
+];
 
 const AccountDetailsContainer = styled.div`
   display: flex;
@@ -54,45 +69,80 @@ const HiddenInput = styled.input`
   display: none;
 `;
 
+const isMobileDevice = () => {
+  return /Mobi|Android/i.test(navigator.userAgent);
+};
+
+const AvatarContainer = styled.div`
+  position: relative;
+  cursor: pointer;
+  &:hover .camera-icon {
+    opacity: 0.7;
+  }
+`;
+
+const StyledAvatar = styled(Avatar)`
+  width: 100px !important;
+  height: 100px !important;
+  background-color: ${colors.brand.primary};
+`;
+
+const CameraIcon = styled(CameraAlt)`
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  color: white;
+  font-size: 48px;
+  pointer-events: none;
+`;
+
 const AccountDetails = () => {
   const { user } = useContext(AuthenticationContext);
   const [userDetails, setUserDetails] = useState({
-    nickname: "",
-    phoneNumber: "",
-    userType: "customer", // Default user type
-    dateOfBirth: "",
+    userName: user.userName || "",
+    email: user.email || "",
+    mobile: user.mobile || "",
+    userRoleId: user.userRoleId || 3,
+    shopId: user.shopId || null,
+    photoUrl: user.photoUrl || "users/default.jpg",
     address1: "",
     address2: "",
     country: "",
     city: "",
     state: "",
     poBox: "",
-    photoUrl: "",
   });
   const [countries, setCountries] = useState([]);
   const [isCountriesLoading, setIsCountriesLoading] = useState(false);
   const [tempPhoto, setTempPhoto] = useState("");
+  const [anchorEl, setAnchorEl] = useState(null);
 
-  const countriesTransform = (results = []) => {
+  const arrayTransform = (results = []) => {
     return pascalToCamel(results);
   };
 
   useEffect(() => {
-    if (user) {
-      setUserDetails({
-        nickname: user.nickname || "",
-        phoneNumber: user.phoneNumber || "",
-        userType: user.userType || "customer",
-        dateOfBirth: user.dateOfBirth || "",
-        address1: user.address1 || "",
-        address2: user.address2 || "",
-        country: user.country || "",
-        city: user.city || "",
-        state: user.state || "",
-        poBox: user.poBox || "",
-        photoUrl: user.photoUrl || "users/default.jpg",
-      });
+    async function getUserDetails() {
+      if (user) {
+        const raw = { Id: user.id };
+        const requestOptions = createRequestOptions(raw, user.token);
+
+        const { response } = await fetchHttp(
+          "User/getuserbyuserid",
+          requestOptions
+        );
+        const transformedUser = arrayTransform(response);
+
+        const mergedUserDetails = { ...user, ...transformedUser };
+
+        setUserDetails(mergedUserDetails);
+      }
     }
+
+    getUserDetails();
   }, [user]);
 
   const handleChange = (e) => {
@@ -104,18 +154,30 @@ const AccountDetails = () => {
   };
 
   const handleSave = async () => {
-    const detailsToSave = {
-      ...userDetails,
-      photoUrl: tempPhoto || userDetails.photoUrl,
+    const addressDto = {
+      address1: userDetails.address1,
+      address2: userDetails.address2,
+      city: userDetails.city,
+      postalCode: userDetails.poBox,
+      phone: userDetails.mobile, // assuming mobile is used as phone number
     };
+
+    const detailsToSave = {
+      id: user.id,
+      email: userDetails.email,
+      userName: userDetails.userName,
+      name: userDetails.name,
+      mobile: userDetails.mobile,
+      photoUrl: tempPhoto || userDetails.photoUrl,
+      addressDto: addressDto,
+    };
+
     console.log("Saved user details:", detailsToSave);
 
     // Save the updated user details to the backend
     try {
-      const response = await fetchHttp("/user/save", {
-        method: "POST",
-        body: JSON.stringify(detailsToSave),
-      });
+      const requestOptions = createRequestOptions(detailsToSave, user.token);
+      const response = await fetchHttp("User/saveuserdetails", requestOptions);
       if (response.success) {
         console.log("User details saved successfully.");
       } else {
@@ -130,8 +192,13 @@ const AccountDetails = () => {
     if (countries.length === 0) {
       setIsCountriesLoading(true);
       try {
-        const response = await fetchHttp("Country/getcountries");
-        const transformedCountries = countriesTransform(response.data);
+        const raw = { Columns: ["Name"] };
+        const requestOptions = createRequestOptions(raw);
+        const { response } = await fetchHttp(
+          "Country/getcountries",
+          requestOptions
+        );
+        const transformedCountries = arrayTransform(response?.Countries);
         setCountries(transformedCountries);
       } catch (error) {
         console.error("Failed to fetch countries:", error);
@@ -150,24 +217,59 @@ const AccountDetails = () => {
       };
       reader.readAsDataURL(file);
     }
+    setAnchorEl(null);
   };
+
+  const handleOpenMenu = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleCloseMenu = () => {
+    setAnchorEl(null);
+  };
+
+  const handleUseCamera = () => {
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = "image/*";
+    input.capture = "camera";
+    input.onchange = handlePhotoUpload;
+    input.click();
+    setAnchorEl(null);
+  };
+
+  const visibleRoles = userRoles.filter(role => role.visible || role.Id === userDetails.userRoleId);
 
   return (
     <AccountDetailsContainer>
-      <label htmlFor="photo-upload">
-        <Avatar
+      <AvatarContainer onClick={handleOpenMenu}>
+        <StyledAvatar
           alt="User Avatar"
           src={tempPhoto || `/images/${userDetails.photoUrl}`}
-          sx={{
-            width: 100,
-            height: 100,
-            bgcolor: colors.brand.primary,
-            cursor: "pointer",
-          }}
         />
-      </label>
+        <CameraIcon className="camera-icon" />
+      </AvatarContainer>
+      <Menu
+        id="photo-menu"
+        anchorEl={anchorEl}
+        open={Boolean(anchorEl)}
+        onClose={handleCloseMenu}
+      >
+        <MenuItem
+          onClick={() => document.getElementById("file-upload").click()}
+        >
+          <Upload />
+          Upload Picture
+        </MenuItem>
+        {isMobileDevice() && (
+          <MenuItem onClick={handleUseCamera}>
+            <CameraAlt />
+            Use Camera
+          </MenuItem>
+        )}
+      </Menu>
       <HiddenInput
-        id="photo-upload"
+        id="file-upload"
         type="file"
         accept="image/*"
         onChange={handlePhotoUpload}
@@ -180,15 +282,15 @@ const AccountDetails = () => {
         <FieldRow>
           <StyledTextField
             label="Nickname"
-            name="nickname"
-            value={userDetails.nickname}
+            name="userName"
+            value={userDetails.userName}
             onChange={handleChange}
             variant="outlined"
           />
           <StyledTextField
             label="Phone Number"
-            name="phoneNumber"
-            value={userDetails.phoneNumber}
+            name="mobile"
+            value={userDetails.mobile}
             onChange={handleChange}
             variant="outlined"
           />
@@ -196,22 +298,24 @@ const AccountDetails = () => {
         <FieldRow>
           <StyledTextField
             label="User Type"
-            name="userType"
-            value={userDetails.userType}
+            name="userRoleId"
+            value={userDetails.userRoleId}
             onChange={handleChange}
             variant="outlined"
-            disabled
-          />
+            select
+          >
+            {visibleRoles.map((role) => (
+              <MenuItem key={role.Id} value={role.Id}>
+                {role.Name}
+              </MenuItem>
+            ))}
+          </StyledTextField>
           <StyledTextField
-            label="Date of Birth"
-            name="dateOfBirth"
-            type="date"
-            value={userDetails.dateOfBirth}
+            label="Shop"
+            name="shopId"
+            value={userDetails.shop}
             onChange={handleChange}
             variant="outlined"
-            InputLabelProps={{
-              shrink: true,
-            }}
           />
         </FieldRow>
       </Section>
@@ -270,7 +374,7 @@ const AccountDetails = () => {
             }}
           >
             {countries.map((country) => (
-              <MenuItem key={country.code} value={country.name}>
+              <MenuItem key={country.id} value={country.id}>
                 {country.name}
               </MenuItem>
             ))}
