@@ -1,10 +1,11 @@
-import { createContext, useEffect, useState } from 'react';
+import { createContext, useEffect, useState } from "react";
 
 export const LocationContext = createContext();
 
 export const LocationContextProvider = ({ children }) => {
   const [keyword, setKeyword] = useState("");
-  const [location, setLocation] = useState(null);
+  const [countryCode, setCountryCode] = useState(null);
+  const [countryName, setCountryName] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -19,7 +20,10 @@ export const LocationContextProvider = ({ children }) => {
         `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=en`
       );
       const data = await response.json();
-      return data.countryCode;
+      if (data) {
+        setCountryCode(data.countryCode);
+        setCountryName(data.countryName);
+      }
     } catch (err) {
       return null;
     }
@@ -30,8 +34,7 @@ export const LocationContextProvider = ({ children }) => {
       navigator.geolocation.getCurrentPosition(
         async (position) => {
           const { latitude, longitude } = position.coords;
-          const country = await getCountryFromCoordinates(latitude, longitude);
-          setLocation(country);
+          await getCountryFromCoordinates(latitude, longitude);
           setIsLoading(false);
         },
         (err) => {
@@ -56,7 +59,8 @@ export const LocationContextProvider = ({ children }) => {
       value={{
         isLoading,
         error,
-        location,
+        countryCode,
+        countryName,
         getLocation,
         search: onSearch,
         keyword,

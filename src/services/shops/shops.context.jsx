@@ -1,9 +1,6 @@
 import { useState, useContext, createContext, useEffect } from "react";
 
-import {
-  shopsRequest,
-  shopsTransform,
-} from "./shops.service";
+import { shopsRequest, shopsTransform } from "./shops.service";
 
 import { LocationContext } from "../location/location.context";
 
@@ -13,7 +10,7 @@ export const ShopsContextProvider = ({ children }) => {
   const [shops, setShops] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
-  const { location } = useContext(LocationContext);
+  const { countryCode } = useContext(LocationContext);
 
   const retrieveShops = (loc) => {
     setIsLoading(true);
@@ -33,11 +30,11 @@ export const ShopsContextProvider = ({ children }) => {
     }, 2000);
   };
   useEffect(() => {
-    if (location) {
-      const locationString = `${location.lat},${location.lng}`;
+    if (countryCode) {
+      const locationString = `${countryCode.lat},${countryCode.lng}`;
       retrieveShops(locationString);
     }
-  }, [location]);
+  }, [countryCode]);
 
   return (
     <ShopsContext.Provider

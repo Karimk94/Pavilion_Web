@@ -13,7 +13,8 @@ import styled from "styled-components";
 import { Spacer } from "../../../components/spacer/spacer.component";
 import { colors } from "../../../infrastructure/theme/colors";
 import { AuthenticationContext } from "../../../services/authentication/authentication.context";
-import { pascalToCamel } from "../../../utils/array-transform";
+import { LocationContext } from "../../../services/location/location.context";
+import { pascalToCamel, camelToPascal } from "../../../utils/array-transform";
 import fetchHttp from "../../../utils/fetchHttp";
 import { createRequestOptions } from "../../../utils/request-options";
 
@@ -106,7 +107,7 @@ const AccountDetails = () => {
     email: user.email || "",
     mobile: user.mobile || "",
     userRoleId: user.userRoleId || 3,
-    shopId: user.shopId || null,
+    shopId: user.shopId || "",
     photoUrl: user.photoUrl || "users/default.jpg",
     address1: "",
     address2: "",
@@ -114,6 +115,7 @@ const AccountDetails = () => {
     city: "",
     state: "",
     poBox: "",
+    countryId: null,
   });
   const [countries, setCountries] = useState([]);
   const [isCountriesLoading, setIsCountriesLoading] = useState(false);
@@ -138,15 +140,46 @@ const AccountDetails = () => {
 
         const mergedUserDetails = { ...user, ...transformedUser };
 
+        // Set user details
         setUserDetails(mergedUserDetails);
+
+        if (mergedUserDetails.countryId && countries.length > 0) {
+          const country = countries.find(
+            (country) => country.id === mergedUserDetails.countryId
+          );
+          if (country) {
+            debugger;
+          }
+        }
       }
     }
 
     getUserDetails();
-  }, [user]);
+  }, [user, countries]);
+
+  useEffect(() => {
+    const inputs = document.querySelectorAll("input");
+    inputs.forEach((input) => {
+      input.addEventListener("input", handleInputEvent);
+    });
+
+    return () => {
+      inputs.forEach((input) => {
+        input.removeEventListener("input", handleInputEvent);
+      });
+    };
+  }, []);
+
+  const handleInputEvent = (e) => {
+    const { name, value } = e.target || e.currentTarget;
+    setUserDetails((prevDetails) => ({
+      ...prevDetails,
+      [name]: value,
+    }));
+  };
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
+    const { name, value } = e.target || e.currentTarget;
     setUserDetails((prevDetails) => ({
       ...prevDetails,
       [name]: value,
@@ -154,27 +187,28 @@ const AccountDetails = () => {
   };
 
   const handleSave = async () => {
-    const addressDto = {
-      address1: userDetails.address1,
-      address2: userDetails.address2,
-      city: userDetails.city,
-      postalCode: userDetails.poBox,
-      phone: userDetails.mobile, // assuming mobile is used as phone number
+    const userAddressDTO = {
+      Id: userDetails.addressId || 0,
+      CountryId: userDetails.countryId || 0,
+      Address1: userDetails.address1 || "",
+      Address2: userDetails.address2 || "",
+      City: userDetails.city || "",
+      PostalCode: userDetails.poBox || "",
+      Phone: userDetails.mobile || "",
     };
 
-    const detailsToSave = {
-      id: user.id,
-      email: userDetails.email,
-      userName: userDetails.userName,
-      name: userDetails.name,
-      mobile: userDetails.mobile,
-      photoUrl: tempPhoto || userDetails.photoUrl,
-      addressDto: addressDto,
-    };
+    const detailsToSave = camelToPascal({
+      Id: user.id,
+      ShopId: userDetails.shopId || null,
+      UserRoleId: userDetails.userRoleId,
+      Email: userDetails.email,
+      UserName: userDetails.userName,
+      Name: userDetails.name || "",
+      Mobile: parseInt(userDetails.mobile, 10) || null,
+      PhotoUrl: tempPhoto || userDetails.photoUrl,
+      UserAddressDTO: userAddressDTO,
+    });
 
-    console.log("Saved user details:", detailsToSave);
-
-    // Save the updated user details to the backend
     try {
       const requestOptions = createRequestOptions(detailsToSave, user.token);
       const response = await fetchHttp("User/saveuserdetails", requestOptions);
@@ -238,7 +272,9 @@ const AccountDetails = () => {
     setAnchorEl(null);
   };
 
-  const visibleRoles = userRoles.filter(role => role.visible || role.Id === userDetails.userRoleId);
+  const visibleRoles = userRoles.filter(
+    (role) => role.visible || role.Id === userDetails.userRoleId
+  );
 
   return (
     <AccountDetailsContainer>
@@ -283,14 +319,14 @@ const AccountDetails = () => {
           <StyledTextField
             label="Nickname"
             name="userName"
-            value={userDetails.userName}
+            value={userDetails.userName || ""}
             onChange={handleChange}
             variant="outlined"
           />
           <StyledTextField
             label="Phone Number"
             name="mobile"
-            value={userDetails.mobile}
+            value={userDetails.mobile || ""}
             onChange={handleChange}
             variant="outlined"
           />
@@ -299,10 +335,11 @@ const AccountDetails = () => {
           <StyledTextField
             label="User Type"
             name="userRoleId"
-            value={userDetails.userRoleId}
+            value={userDetails.userRoleId || ""}
             onChange={handleChange}
             variant="outlined"
             select
+            disabled={user?.userRoleId == 1}
           >
             {visibleRoles.map((role) => (
               <MenuItem key={role.Id} value={role.Id}>
@@ -313,9 +350,10 @@ const AccountDetails = () => {
           <StyledTextField
             label="Shop"
             name="shopId"
-            value={userDetails.shop}
+            value={userDetails.shopId || ""}
             onChange={handleChange}
             variant="outlined"
+            select={false} // Disable the select functionality
           />
         </FieldRow>
       </Section>
@@ -325,14 +363,14 @@ const AccountDetails = () => {
           <StyledTextField
             label="Address 1"
             name="address1"
-            value={userDetails.address1}
+            value={userDetails.address1 || ""}
             onChange={handleChange}
             variant="outlined"
           />
           <StyledTextField
             label="Address 2"
             name="address2"
-            value={userDetails.address2}
+            value={userDetails.address2 || ""}
             onChange={handleChange}
             variant="outlined"
           />
@@ -341,14 +379,14 @@ const AccountDetails = () => {
           <StyledTextField
             label="City"
             name="city"
-            value={userDetails.city}
+            value={userDetails.city || ""}
             onChange={handleChange}
             variant="outlined"
           />
           <StyledTextField
             label="State"
             name="state"
-            value={userDetails.state}
+            value={userDetails.state || ""}
             onChange={handleChange}
             variant="outlined"
           />
@@ -357,7 +395,7 @@ const AccountDetails = () => {
           <StyledTextField
             label="Country"
             name="country"
-            value={userDetails.country}
+            value={userDetails.country || ""}
             onChange={handleChange}
             variant="outlined"
             select
@@ -374,7 +412,7 @@ const AccountDetails = () => {
             }}
           >
             {countries.map((country) => (
-              <MenuItem key={country.id} value={country.id}>
+              <MenuItem key={country.id} value={country.name}>
                 {country.name}
               </MenuItem>
             ))}
@@ -382,7 +420,7 @@ const AccountDetails = () => {
           <StyledTextField
             label="PO Box"
             name="poBox"
-            value={userDetails.poBox}
+            value={userDetails.poBox || ""}
             onChange={handleChange}
             variant="outlined"
           />

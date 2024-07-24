@@ -1,5 +1,5 @@
 import { useCallback, useContext, useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick-theme.css";
 import "slick-carousel/slick/slick.css";
@@ -118,15 +118,13 @@ const NotificationContainer = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  visibility: ${(props) => (props.show ? "visible" : "hidden")};
-  opacity: ${(props) => (props.show ? 0.7 : 0)};
+  visibility: ${(props) => (props.$show ? "visible" : "hidden")};
+  opacity: ${(props) => (props.$show ? 0.7 : 0)};
   transition: visibility 0s, opacity 0.5s linear;
 `;
 
-
 const ProductInfoCard = ({ product = {}, currency = {}, isDetail = false }) => {
   const navigate = useNavigate();
-  const location = useLocation();
   const { addToCart } = useContext(CartContext);
   const { currency: contextCurrency } = useContext(ProductsContext);
 
@@ -242,8 +240,8 @@ const ProductInfoCard = ({ product = {}, currency = {}, isDetail = false }) => {
           </AddToCartButton>
         </ProductDetails>
       </ProductCardWrapper>
-      <NotificationContainer show={isNotificationVisible}>
-      {name} added to cart!
+      <NotificationContainer $show={isNotificationVisible}>
+        {name} added to cart!
       </NotificationContainer>
     </>
   );

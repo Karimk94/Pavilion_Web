@@ -11,19 +11,25 @@ export const ProductsContextProvider = ({ children }) => {
   const [currency, setCurrency] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
-  const { location, getLocation } = useContext(LocationContext);
+  const { countryCode, getLocation } = useContext(LocationContext);
 
   const retrieveProducts = async (location, key) => {
     setIsLoading(true);
     setProducts([]);
 
     try {
-      const results = await productsRequest(location, key).then(productsTransform);
+      const results = await productsRequest(location, key).then(
+        productsTransform
+      );
       const { currencyName, currencyCode, currencySymbol } = results;
 
       const convertedProducts = await Promise.all(
         results.products.map(async (product) => {
-          const convertedPrice = await convertCurrency(product.price, "USD", currencyCode);
+          const convertedPrice = await convertCurrency(
+            product.price,
+            "USD",
+            currencyCode
+          );
           return { ...product, convertedPrice };
         })
       );
@@ -46,13 +52,13 @@ export const ProductsContextProvider = ({ children }) => {
     async function retrieveLocation() {
       await getLocation();
 
-      if (location) {
-        retrieveProducts(location, keyword);
+      if (countryCode) {
+        retrieveProducts(countryCode, keyword);
       }
     }
 
     retrieveLocation();
-  }, [keyword, location]);
+  }, [keyword, countryCode]);
 
   return (
     <ProductsContext.Provider
@@ -63,7 +69,7 @@ export const ProductsContextProvider = ({ children }) => {
         search: onSearch,
         isLoading,
         error,
-        keyword
+        keyword,
       }}
     >
       {children}

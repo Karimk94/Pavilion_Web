@@ -60,19 +60,19 @@ const TransparentSafeArea = styled.div`
   z-index: 3;
 `;
 
-const SettingsItem = styled(ListItemButton)({
-  padding: "1em",
-  backgroundColor: "rgba(255, 255, 255, 0.4)",
-  marginBottom: "1em",
-  borderRadius: "8px",
-});
+const SettingsItem = styled(ListItemButton)`
+  padding: 1em;
+  background-color: rgba(255, 255, 255, 0.4);
+  margin-bottom: 1em;
+  border-radius: 8px;
+`;
 
-const AvatarContainer = styled("div")({
-  display: "flex",
-  flexDirection: "column",
-  alignItems: "center",
-  marginBottom: "2em",
-});
+const AvatarContainer = styled("div")`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 2em;
+`;
 
 const StyledEmail = styled(Text)`
   font-family: inherit;
@@ -112,7 +112,7 @@ const SettingsModal = ({ isOpen = false, onClose }) => {
               </Spacer>
             </AvatarContainer>
             <List>
-              <SettingsItem button onClick={() => handleItemClick("/orders")}>
+              <SettingsItem onClick={() => handleItemClick("/orders")}>
                 <ListItemAvatar>
                   <Avatar sx={{ bgcolor: colors.ui.secondary }}>
                     <FaHistory />
@@ -121,10 +121,7 @@ const SettingsModal = ({ isOpen = false, onClose }) => {
                 <ListItemText primary="Orders" />
               </SettingsItem>
               <Spacer />
-              <SettingsItem
-                button
-                onClick={() => handleItemClick("/favourites")}
-              >
+              <SettingsItem onClick={() => handleItemClick("/favourites")}>
                 <ListItemAvatar>
                   <Avatar sx={{ bgcolor: colors.ui.secondary }}>
                     <FaHeart />
@@ -133,10 +130,7 @@ const SettingsModal = ({ isOpen = false, onClose }) => {
                 <ListItemText primary="Favourites" />
               </SettingsItem>
               <Spacer />
-              <SettingsItem
-                button
-                onClick={() => handleItemClick("/accountdetails")}
-              >
+              <SettingsItem onClick={() => handleItemClick("/accountdetails")}>
                 <ListItemAvatar>
                   <Avatar sx={{ bgcolor: colors.ui.secondary }}>
                     <FaImagePortrait />
@@ -145,7 +139,7 @@ const SettingsModal = ({ isOpen = false, onClose }) => {
                 <ListItemText primary="Account Details" />
               </SettingsItem>
               <Spacer />
-              <SettingsItem button onClick={() => handleItemClick("/payment")}>
+              <SettingsItem onClick={() => handleItemClick("/payment")}>
                 <ListItemAvatar>
                   <Avatar sx={{ bgcolor: colors.ui.secondary }}>
                     <FaShoppingCart />
@@ -156,7 +150,6 @@ const SettingsModal = ({ isOpen = false, onClose }) => {
               <Spacer />
               {user && (
                 <SettingsItem
-                  button
                   onClick={() => {
                     onLogout();
                   }}

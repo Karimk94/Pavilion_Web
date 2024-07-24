@@ -24,11 +24,11 @@ const getVariant = (position, size, theme) => {
 };
 
 const SpacerDiv = styled.div`
-  ${({ variant }) => variant};
+  ${({ $variant }) => $variant};
 `;
 
 export const Spacer = ({ position = "top", size = "small", children }) => {
   const theme = useTheme();
   const variant = getVariant(position, size, theme);
-  return <SpacerDiv variant={variant}>{children}</SpacerDiv>;
+  return <SpacerDiv $variant={variant}>{children}</SpacerDiv>;
 };

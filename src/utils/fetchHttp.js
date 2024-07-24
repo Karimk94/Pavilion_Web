@@ -52,7 +52,7 @@ export default async function fetchHttp(url, config) {
       }
     }
   } catch (e) {
-    requestError = e;
+    requestErrors.push(e.Message);
   }
 
   return {

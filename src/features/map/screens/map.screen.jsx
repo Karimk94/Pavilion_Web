@@ -27,19 +27,19 @@ const MapContainerStyled = styled(MapContainer)`
 `;
 
 export const MapScreen = ({ navigation }) => {
-  const { location } = useContext(LocationContext);
+  const { countryCode } = useContext(LocationContext);
   const { shops = [] } = useContext(ShopsContext);
 
   const [latDelta, setLatDelta] = useState(0);
 
-  const { lat, lng, viewport } = location;
+  const { lat, lng, viewport } = countryCode;
 
   useEffect(() => {
     const northeastLat = viewport?.northeast?.lat;
     const southwestLat = viewport?.southwest?.lat;
 
     setLatDelta(northeastLat - southwestLat);
-  }, [location, viewport]);
+  }, [countryCode, viewport]);
 
   return (
     <>

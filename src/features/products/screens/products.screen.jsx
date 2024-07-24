@@ -32,8 +32,6 @@ const ProductItem = styled.div`
   }
 `;
 
-
-
 const ProductListContainer = styled.div`
   padding: 16px;
   width: 90%;
@@ -58,7 +56,7 @@ export const ProductsScreen = () => {
   const { isLoading, products, currency, error } = useContext(ProductsContext);
   const { favourites } = useContext(FavouritesContext);
   const [isToggled, setIsToggled] = useState(false);
-  const hasError = !!error || !!locationError;
+  const hasError = (error == null ? locationError : error) || false;
 
   const navigate = useNavigate();
 
