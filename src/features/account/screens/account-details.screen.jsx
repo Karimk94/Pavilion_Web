@@ -13,8 +13,7 @@ import styled from "styled-components";
 import { Spacer } from "../../../components/spacer/spacer.component";
 import { colors } from "../../../infrastructure/theme/colors";
 import { AuthenticationContext } from "../../../services/authentication/authentication.context";
-import { LocationContext } from "../../../services/location/location.context";
-import { pascalToCamel, camelToPascal } from "../../../utils/array-transform";
+import { pascalToCamel } from "../../../utils/array-transform";
 import fetchHttp from "../../../utils/fetchHttp";
 import { createRequestOptions } from "../../../utils/request-options";
 
@@ -189,25 +188,24 @@ const AccountDetails = () => {
   const handleSave = async () => {
     const userAddressDTO = {
       Id: userDetails.addressId || 0,
-      CountryId: userDetails.countryId || 0,
-      Address1: userDetails.address1 || "",
-      Address2: userDetails.address2 || "",
-      City: userDetails.city || "",
-      PostalCode: userDetails.poBox || "",
-      Phone: userDetails.mobile || "",
+      Address1: userDetails.userAdresses.address1 || "",
+      Address2: userDetails.userAdresses.address2 || "",
+      City: userDetails.userAdresses.city || "",
+      PostalCode: userDetails.userAdresses.postalCode || "",
+      Phone: userDetails.mobile ? userDetails.mobile.toString() : "",
     };
 
-    const detailsToSave = camelToPascal({
+    const detailsToSave = {
       Id: user.id,
-      ShopId: userDetails.shopId || null,
+      ShopId: userDetails.shopId || 0,
       UserRoleId: userDetails.userRoleId,
       Email: userDetails.email,
-      UserName: userDetails.userName,
+      UserName: userDetails.userName || "",
       Name: userDetails.name || "",
-      Mobile: parseInt(userDetails.mobile, 10) || null,
-      PhotoUrl: tempPhoto || userDetails.photoUrl,
+      Mobile: userDetails.mobile ? parseInt(userDetails.mobile, 10) : null,
+      PhotoUrl: tempPhoto || userDetails.photoUrl || "",
       UserAddressDTO: userAddressDTO,
-    });
+    };
 
     try {
       const requestOptions = createRequestOptions(detailsToSave, user.token);
@@ -363,14 +361,14 @@ const AccountDetails = () => {
           <StyledTextField
             label="Address 1"
             name="address1"
-            value={userDetails.address1 || ""}
+            value={userDetails.userAdresses.address1 || ""}
             onChange={handleChange}
             variant="outlined"
           />
           <StyledTextField
             label="Address 2"
             name="address2"
-            value={userDetails.address2 || ""}
+            value={userDetails.userAdresses.address2 || ""}
             onChange={handleChange}
             variant="outlined"
           />
@@ -379,7 +377,7 @@ const AccountDetails = () => {
           <StyledTextField
             label="City"
             name="city"
-            value={userDetails.city || ""}
+            value={userDetails.userAdresses.city || ""}
             onChange={handleChange}
             variant="outlined"
           />
@@ -420,7 +418,7 @@ const AccountDetails = () => {
           <StyledTextField
             label="PO Box"
             name="poBox"
-            value={userDetails.poBox || ""}
+            value={userDetails.userAdresses.postalCode || ""}
             onChange={handleChange}
             variant="outlined"
           />
