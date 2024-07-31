@@ -26,6 +26,7 @@ const renderSvg = (svgString) => (
 );
 
 const ProductDetails = styled.div`
+  background-color: ${(props) => props.theme.colors.bg.primary};
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -49,7 +50,7 @@ const PriceContainer = styled.div`
 `;
 
 const AddToCartButton = styled.button`
-  background-color: ${(props) => props.theme.colors.brand.primary};
+  background-color: ${(props) => props.theme.colors.button.unselected};
   color: white;
   border: none;
   padding: 8px;
@@ -60,7 +61,7 @@ const AddToCartButton = styled.button`
   font-family: "Roboto", sans-serif;
 
   &:hover {
-    background-color: ${(props) => props.theme.colors.brand.dark};
+    background-color: ${(props) => props.theme.colors.button.selected};
   }
 `;
 

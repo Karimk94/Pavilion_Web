@@ -21,6 +21,7 @@ const LoadingContainer = styled.div`
 `;
 
 const ProductItem = styled.div`
+  background-color: ${(props) => props.theme.colors.bg.primary};
   cursor: pointer;
   margin-bottom: 16px;
   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);

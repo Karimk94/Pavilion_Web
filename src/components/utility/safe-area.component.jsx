@@ -1,6 +1,5 @@
 import styled from "styled-components";
 
-// SafeArea component for web
 export const SafeArea = styled.div`
   display: flex;
   flex-direction: column;

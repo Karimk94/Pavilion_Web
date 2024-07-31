@@ -41,4 +41,4 @@ const CartButton = ({ onClick }) => {
   );
 };
 
-export default CartButton
+export default CartButton;

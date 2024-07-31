@@ -27,4 +27,8 @@ export const colors = {
     error: "#D0421B",
     success: "#138000",
   },
+  button: {
+    selected: "#228F45",
+    unselected: "#228F22",
+  },
 };

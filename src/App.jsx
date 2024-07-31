@@ -5,22 +5,34 @@ import { CartContextProvider } from "./services/cart/cart.context";
 import { FavouritesContextProvider } from "./services/favourites/favourites.context";
 import { LocationContextProvider } from "./services/location/location.context";
 import { ProductsContextProvider } from "./services/products/products.context";
+import { theme, darkTheme } from "./infrastructure/theme/index";
+import { useState } from "react";
+import { ThemeProvider } from "styled-components";
+
 function App() {
+  const [isDarkMode, setIsDarkMode] = useState(false);
+
+  const toggleTheme = () => {
+    setIsDarkMode((prevMode) => !prevMode);
+  };
+
   return (
     <div>
-      <AuthenticationContextProvider>
-        <CartContextProvider>
-          <FavouritesContextProvider>
-            <LocationContextProvider>
-              <ProductsContextProvider>
-                <Router>
-                  <AppNavigator />
-                </Router>
-              </ProductsContextProvider>
-            </LocationContextProvider>
-          </FavouritesContextProvider>
-        </CartContextProvider>
-      </AuthenticationContextProvider>
+      <ThemeProvider theme={isDarkMode ? darkTheme : theme}>
+        <AuthenticationContextProvider>
+          <CartContextProvider>
+            <FavouritesContextProvider>
+              <LocationContextProvider>
+                <ProductsContextProvider>
+                  <Router>
+                    <AppNavigator toggleTheme={toggleTheme} />
+                  </Router>
+                </ProductsContextProvider>
+              </LocationContextProvider>
+            </FavouritesContextProvider>
+          </CartContextProvider>
+        </AuthenticationContextProvider>
+      </ThemeProvider>
     </div>
   );
 }

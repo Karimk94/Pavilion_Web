@@ -62,3 +62,32 @@ export const AnimationWrapper = styled.div`
   top: 30px;
   padding: ${(props) => props.theme.space[2]};
 `;
+
+export const RegisterButton = styled(Button)`
+  && {
+    background-color: ${colors.brand.primary};
+    color: white;
+    padding: ${(props) => props.theme.space[2]};
+    width: 150px;
+
+    &:hover {
+      background-color: ${colors.brand.primary};
+      color: white;
+    }
+  }
+`;
+
+export const LoginButton = styled(Button)`
+  && {
+    background-color: white;
+    color: ${colors.brand.primary};
+    padding: ${(props) => props.theme.space[2]};
+    border: 2px solid ${colors.brand.primary};
+    width: 150px;
+
+    &:hover {
+      background-color: white;
+      color: ${colors.brand.primary};
+    }
+  }
+`;

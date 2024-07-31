@@ -102,12 +102,12 @@ const CameraIcon = styled(CameraAlt)`
 const AccountDetails = () => {
   const { user } = useContext(AuthenticationContext);
   const [userDetails, setUserDetails] = useState({
-    userName: user.userName || "",
-    email: user.email || "",
-    mobile: user.mobile || "",
-    userRoleId: user.userRoleId || 3,
-    shopId: user.shopId || "",
-    photoUrl: user.photoUrl || "users/default.jpg",
+    userName: user?.userName || "",
+    email: user?.email || "",
+    mobile: user?.mobile || "",
+    userRoleId: user?.userRoleId || 3,
+    shopId: user?.shopId || "",
+    photoUrl: user?.photoUrl || "users/default.jpg",
     address1: "",
     address2: "",
     country: "",
@@ -128,8 +128,8 @@ const AccountDetails = () => {
   useEffect(() => {
     async function getUserDetails() {
       if (user) {
-        const raw = { Id: user.id };
-        const requestOptions = createRequestOptions(raw, user.token);
+        const raw = { Id: user?.id };
+        const requestOptions = createRequestOptions(raw, user?.token);
 
         const { response } = await fetchHttp(
           "User/getuserbyuserid",
@@ -188,15 +188,15 @@ const AccountDetails = () => {
   const handleSave = async () => {
     const userAddressDTO = {
       Id: userDetails.addressId || 0,
-      Address1: userDetails.userAdresses.address1 || "",
-      Address2: userDetails.userAdresses.address2 || "",
-      City: userDetails.userAdresses.city || "",
-      PostalCode: userDetails.userAdresses.postalCode || "",
+      Address1: userDetails.userAdresses?.[0]?.address1 || "",
+      Address2: userDetails.userAdresses?.[0]?.address2 || "",
+      City: userDetails.userAdresses?.[0]?.city || "",
+      PostalCode: userDetails.userAdresses?.[0]?.postalCode || "",
       Phone: userDetails.mobile ? userDetails.mobile.toString() : "",
     };
 
     const detailsToSave = {
-      Id: user.id,
+      Id: user?.id,
       ShopId: userDetails.shopId || 0,
       UserRoleId: userDetails.userRoleId,
       Email: userDetails.email,
@@ -208,7 +208,7 @@ const AccountDetails = () => {
     };
 
     try {
-      const requestOptions = createRequestOptions(detailsToSave, user.token);
+      const requestOptions = createRequestOptions(detailsToSave, user?.token);
       const response = await fetchHttp("User/saveuserdetails", requestOptions);
       if (response.success) {
         console.log("User details saved successfully.");
@@ -337,7 +337,7 @@ const AccountDetails = () => {
             onChange={handleChange}
             variant="outlined"
             select
-            disabled={user?.userRoleId == 1}
+            disabled={user?.userRoleId === 1}
           >
             {visibleRoles.map((role) => (
               <MenuItem key={role.Id} value={role.Id}>
@@ -361,14 +361,14 @@ const AccountDetails = () => {
           <StyledTextField
             label="Address 1"
             name="address1"
-            value={userDetails.userAdresses.address1 || ""}
+            value={userDetails.userAdresses?.[0]?.address1 || ""}
             onChange={handleChange}
             variant="outlined"
           />
           <StyledTextField
             label="Address 2"
             name="address2"
-            value={userDetails.userAdresses.address2 || ""}
+            value={userDetails.userAdresses?.[0]?.address2 || ""}
             onChange={handleChange}
             variant="outlined"
           />
@@ -377,7 +377,7 @@ const AccountDetails = () => {
           <StyledTextField
             label="City"
             name="city"
-            value={userDetails.userAdresses.city || ""}
+            value={userDetails.userAdresses?.[0]?.city || ""}
             onChange={handleChange}
             variant="outlined"
           />
@@ -418,7 +418,7 @@ const AccountDetails = () => {
           <StyledTextField
             label="PO Box"
             name="poBox"
-            value={userDetails.userAdresses.postalCode || ""}
+            value={userDetails.userAdresses?.[0]?.postalCode || ""}
             onChange={handleChange}
             variant="outlined"
           />

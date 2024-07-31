@@ -1,18 +1,14 @@
 import { useContext, useState } from "react";
 import { FaShoppingCart, FaUserCircle } from "react-icons/fa";
 import { FaMap, FaShop, FaUtensils } from "react-icons/fa6";
-import {
-  NavLink,
-  Navigate,
-  Route,
-  Routes,
-} from "react-router-dom";
+import { Navigate, NavLink, Route, Routes } from "react-router-dom";
 import styled from "styled-components";
 import CartButton from "../../components/cart/cart-button.component";
 import AccountDetails from "../../features/account/screens/account-details.screen";
 import CartModal from "../../features/cart/screens/cart-modal.component";
 import { MapScreen } from "../../features/map/screens/map.screen";
-import SettingsModal from "../../features/settings/screens/settings.screen";
+import SettingsScreen from "../../features/settings/screens/settings.screen";
+import UserMenuModal from "../../features/user-menu/screens/user-menu.screen";
 import { AuthenticationContext } from "../../services/authentication/authentication.context";
 import { CartContext } from "../../services/cart/cart.context";
 import { ProductsContext } from "../../services/products/products.context";
@@ -81,9 +77,9 @@ const ProfileImage = styled.img`
   object-fit: cover;
 `;
 
-const AppNavigator = () => {
+const AppNavigator = ({ toggleTheme }) => {
   const [isCartOpen, setIsCartOpen] = useState(false);
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const { cart } = useContext(CartContext);
   const { currency } = useContext(ProductsContext);
   const { user } = useContext(AuthenticationContext);
@@ -109,7 +105,7 @@ const AppNavigator = () => {
             <FaShoppingCart />
           </CartButton>
         </CartIconContainer>
-        <ProfileIconContainer onClick={() => setIsSettingsOpen(true)}>
+        <ProfileIconContainer onClick={() => setIsUserMenuOpen(true)}>
           {user ? (
             <ProfileImage
               src={`images/${user.photoUrl || defaultProfilePicture}`}
@@ -125,15 +121,19 @@ const AppNavigator = () => {
         onClose={() => setIsCartOpen(false)}
         currency={currency}
       />
-      <SettingsModal
-        isOpen={isSettingsOpen}
-        onClose={() => setIsSettingsOpen(false)}
+      <UserMenuModal
+        isOpen={isUserMenuOpen}
+        onClose={() => setIsUserMenuOpen(false)}
       />
       <Routes>
         <Route path="/products/*" element={<ProductsNavigator />} />
         <Route path="/shops/*" element={<ShopsNavigator />} />
         <Route path="/map/*" element={<MapScreen />} />
         <Route path="/accountdetails/*" element={<AccountDetails />} />
+        <Route
+          path="/settings"
+          element={<SettingsScreen toggleTheme={toggleTheme} />}
+        />
         <Route path="/" element={<Navigate to="/products" replace />} />
       </Routes>
     </>
