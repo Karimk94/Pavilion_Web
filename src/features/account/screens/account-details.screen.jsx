@@ -1,21 +1,31 @@
 import { CameraAlt, Upload } from "@mui/icons-material";
 import {
-  Avatar,
-  Button,
   Menu,
   MenuItem,
-  TextField,
-  Typography,
+  Typography
 } from "@mui/material";
 import React, { useContext, useEffect, useState } from "react";
 import { TailSpin } from "react-loader-spinner";
-import styled from "styled-components";
 import { Spacer } from "../../../components/spacer/spacer.component";
+import { SafeArea } from "../../../components/utility/safe-area.component";
 import { colors } from "../../../infrastructure/theme/colors";
 import { AuthenticationContext } from "../../../services/authentication/authentication.context";
 import { pascalToCamel } from "../../../utils/array-transform";
 import fetchHttp from "../../../utils/fetchHttp";
 import { createRequestOptions } from "../../../utils/request-options";
+import {
+  AccountDetailsContainer,
+  AvatarContainer,
+  CameraIcon,
+  FieldRow,
+  HiddenInput,
+  SaveButton,
+  Section,
+  SectionTitle,
+  StyledAvatar,
+  StyledTextField
+} from "../components/account-details.styles";
+
 
 const userRoles = [
   { Id: 3, Name: "Customer", visible: true },
@@ -23,81 +33,9 @@ const userRoles = [
   { Id: 1, Name: "Admin", visible: false },
 ];
 
-const AccountDetailsContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 2rem;
-`;
-
-const Section = styled.div`
-  width: 100%;
-  max-width: 600px;
-  margin-bottom: 2rem;
-  display: flex;
-  flex-direction: column;
-`;
-
-const SectionTitle = styled(Typography).attrs({ variant: "h6" })`
-  margin-bottom: 1rem;
-  font-weight: bold;
-`;
-
-const FieldRow = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-  margin-bottom: 1rem;
-`;
-
-const StyledTextField = styled(TextField)`
-  && {
-    flex: 1;
-    min-width: 250px;
-  }
-`;
-
-const SaveButton = styled(Button)`
-  && {
-    background-color: ${colors.brand.primary};
-    color: white;
-    margin-top: 1rem;
-  }
-`;
-
-const HiddenInput = styled.input`
-  display: none;
-`;
-
 const isMobileDevice = () => {
   return /Mobi|Android/i.test(navigator.userAgent);
 };
-
-const AvatarContainer = styled.div`
-  position: relative;
-  cursor: pointer;
-  &:hover .camera-icon {
-    opacity: 0.7;
-  }
-`;
-
-const StyledAvatar = styled(Avatar)`
-  width: 100px !important;
-  height: 100px !important;
-  background-color: ${colors.brand.primary};
-`;
-
-const CameraIcon = styled(CameraAlt)`
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  opacity: 0;
-  transition: opacity 0.3s ease;
-  color: white;
-  font-size: 48px;
-  pointer-events: none;
-`;
 
 const AccountDetails = () => {
   const { user } = useContext(AuthenticationContext);
@@ -275,6 +213,7 @@ const AccountDetails = () => {
   );
 
   return (
+    <SafeArea>
     <AccountDetailsContainer>
       <AvatarContainer onClick={handleOpenMenu}>
         <StyledAvatar
@@ -428,6 +367,7 @@ const AccountDetails = () => {
         Save
       </SaveButton>
     </AccountDetailsContainer>
+    </SafeArea>
   );
 };
 

@@ -161,7 +161,7 @@ const UserMenuModal = ({ isOpen = false, onClose }) => {
                 <UserMenuItem
                   onClick={() => {
                     onLogout();
-                    handleItemClick("/products");
+                    handleItemClick("/");
                   }}
                 >
                   <ListItemAvatar>
