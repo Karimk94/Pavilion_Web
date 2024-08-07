@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import React, { useContext, useState } from "react";
 import { FaShoppingCart, FaUserCircle } from "react-icons/fa";
 import { FaMap, FaShop, FaUtensils } from "react-icons/fa6";
 import { Navigate, NavLink, Route, Routes } from "react-router-dom";
@@ -44,7 +44,7 @@ const NavLinks = styled.div`
 `;
 
 const StyledNavLink = styled(NavLink)`
-  color: ${colors.brand.muted};
+  color: ${(props) => props.theme.colors.brand.muted};
   text-decoration: none;
   display: flex;
   align-items: center;
@@ -52,7 +52,7 @@ const StyledNavLink = styled(NavLink)`
   padding: 0 1em;
 
   &.active {
-    color: ${colors.brand.bright}; /* Adjust the color to your preference */
+    color: ${(props) => props.theme.colors.brand.bright};
   }
 `;
 
@@ -61,7 +61,7 @@ const CartIconContainer = styled.div`
   top: 80px;
   right: 10px;
   cursor: pointer;
-  color: ${colors.brand.muted};
+  color: ${(props) => props.theme.colors.brand.muted};
 `;
 
 const ProfileIconContainer = styled.div`
@@ -77,7 +77,7 @@ const ProfileImage = styled.img`
   object-fit: cover;
 `;
 
-const AppNavigator = ({ toggleTheme }) => {
+const AppNavigator = () => {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const { cart } = useContext(CartContext);
@@ -130,10 +130,7 @@ const AppNavigator = ({ toggleTheme }) => {
         <Route path="/shops/*" element={<ShopsNavigator />} />
         <Route path="/map/*" element={<MapScreen />} />
         <Route path="/accountdetails/*" element={<AccountDetails />} />
-        <Route
-          path="/settings"
-          element={<SettingsScreen toggleTheme={toggleTheme} />}
-        />
+        <Route path="/settings" element={<SettingsScreen />} />
         <Route path="/" element={<Navigate to="/products" replace />} />
       </Routes>
     </>

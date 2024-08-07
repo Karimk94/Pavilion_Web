@@ -1,5 +1,7 @@
 import styled from "styled-components";
 import { SafeArea } from "../../../components/utility/safe-area.component";
+import { ThemeContext } from "./../../../services/theme/theme.context";
+import { useContext } from "react";
 
 const FieldRow = styled.div`
   display: flex;
@@ -29,7 +31,9 @@ const ToggleButton = styled.button`
   }
 `;
 
-const SettingsScreen = ({ toggleTheme }) => {
+const SettingsScreen = () => {
+  const { toggleTheme } = useContext(ThemeContext);
+
   return (
     <SafeArea>
       <Section>

@@ -22,6 +22,7 @@ import { Text } from "../../../components/typography/text.component";
 import { AccountScreen } from "../../account/screens/account.screen";
 import { colors } from "../../../infrastructure/theme/colors";
 import { AuthenticationContext } from "../../../services/authentication/authentication.context";
+import { SafeArea } from "../../../components/utility/safe-area.component";
 
 Modal.setAppElement("#root");
 
@@ -93,92 +94,100 @@ const UserMenuModal = ({ isOpen = false, onClose }) => {
   };
 
   return (
-    <UserMenuModalContainer
-      isOpen={isOpen}
-      onRequestClose={onClose}
-      contentLabel="User Menu Modal"
-    >
-      <CloseButton onClick={onClose}>&times;</CloseButton>
-      <TransparentSafeArea>
-        {user ? (
-          <>
-            <AvatarContainer>
-              <Avatar
-                alt="User Avatar"
-                src={`images/${user.photoUrl || "/users/default.jpg"}`}
-                sx={{ width: 100, height: 100, bgcolor: colors.brand.primary }}
-              />
-              <Spacer position="top" size="large">
-                <StyledEmail>{user?.email}</StyledEmail>
-              </Spacer>
-            </AvatarContainer>
-            <List>
-              <UserMenuItem onClick={() => handleItemClick("/orders")}>
-                <ListItemAvatar>
-                  <Avatar sx={{ bgcolor: colors.ui.secondary }}>
-                    <FaHistory />
-                  </Avatar>
-                </ListItemAvatar>
-                <ListItemText primary="Orders" />
-              </UserMenuItem>
-              <Spacer />
-              <UserMenuItem onClick={() => handleItemClick("/favourites")}>
-                <ListItemAvatar>
-                  <Avatar sx={{ bgcolor: colors.ui.secondary }}>
-                    <FaHeart />
-                  </Avatar>
-                </ListItemAvatar>
-                <ListItemText primary="Favourites" />
-              </UserMenuItem>
-              <Spacer />
-              <UserMenuItem onClick={() => handleItemClick("/accountdetails")}>
-                <ListItemAvatar>
-                  <Avatar sx={{ bgcolor: colors.ui.secondary }}>
-                    <FaImagePortrait />
-                  </Avatar>
-                </ListItemAvatar>
-                <ListItemText primary="Account Details" />
-              </UserMenuItem>
-              <Spacer />
-              <UserMenuItem onClick={() => handleItemClick("/payment")}>
-                <ListItemAvatar>
-                  <Avatar sx={{ bgcolor: colors.ui.secondary }}>
-                    <FaShoppingCart />
-                  </Avatar>
-                </ListItemAvatar>
-                <ListItemText primary="Payment" />
-              </UserMenuItem>
-              <UserMenuItem onClick={() => handleItemClick("/settings")}>
-                <ListItemAvatar>
-                  <Avatar sx={{ bgcolor: colors.ui.secondary }}>
-                    <FaGear />
-                  </Avatar>
-                </ListItemAvatar>
-                <ListItemText primary="Settings" />
-              </UserMenuItem>
-              <Spacer />
-              {user && (
-                <UserMenuItem
-                  onClick={() => {
-                    onLogout();
-                    handleItemClick("/");
+    <SafeArea>
+      <UserMenuModalContainer
+        isOpen={isOpen}
+        onRequestClose={onClose}
+        contentLabel="User Menu Modal"
+      >
+        <CloseButton onClick={onClose}>&times;</CloseButton>
+        <TransparentSafeArea>
+          {user ? (
+            <>
+              <AvatarContainer>
+                <Avatar
+                  alt="User Avatar"
+                  src={`images/${user.photoUrl || "/users/default.jpg"}`}
+                  sx={{
+                    width: 100,
+                    height: 100,
+                    bgcolor: colors.brand.primary,
                   }}
-                >
+                />
+                <Spacer position="top" size="large">
+                  <StyledEmail>{user?.email}</StyledEmail>
+                </Spacer>
+              </AvatarContainer>
+              <List>
+                <UserMenuItem onClick={() => handleItemClick("/orders")}>
                   <ListItemAvatar>
-                    <Avatar sx={{ bgcolor: colors.ui.error }}>
-                      <FaSignOutAlt />
+                    <Avatar sx={{ bgcolor: colors.ui.secondary }}>
+                      <FaHistory />
                     </Avatar>
                   </ListItemAvatar>
-                  <ListItemText primary="Logout" />
+                  <ListItemText primary="Orders" />
                 </UserMenuItem>
-              )}
-            </List>
-          </>
-        ) : (
-          <AccountScreen />
-        )}
-      </TransparentSafeArea>
-    </UserMenuModalContainer>
+                <Spacer />
+                <UserMenuItem onClick={() => handleItemClick("/favourites")}>
+                  <ListItemAvatar>
+                    <Avatar sx={{ bgcolor: colors.ui.secondary }}>
+                      <FaHeart />
+                    </Avatar>
+                  </ListItemAvatar>
+                  <ListItemText primary="Favourites" />
+                </UserMenuItem>
+                <Spacer />
+                <UserMenuItem
+                  onClick={() => handleItemClick("/accountdetails")}
+                >
+                  <ListItemAvatar>
+                    <Avatar sx={{ bgcolor: colors.ui.secondary }}>
+                      <FaImagePortrait />
+                    </Avatar>
+                  </ListItemAvatar>
+                  <ListItemText primary="Account Details" />
+                </UserMenuItem>
+                <Spacer />
+                <UserMenuItem onClick={() => handleItemClick("/payment")}>
+                  <ListItemAvatar>
+                    <Avatar sx={{ bgcolor: colors.ui.secondary }}>
+                      <FaShoppingCart />
+                    </Avatar>
+                  </ListItemAvatar>
+                  <ListItemText primary="Payment" />
+                </UserMenuItem>
+                <UserMenuItem onClick={() => handleItemClick("/settings")}>
+                  <ListItemAvatar>
+                    <Avatar sx={{ bgcolor: colors.ui.secondary }}>
+                      <FaGear />
+                    </Avatar>
+                  </ListItemAvatar>
+                  <ListItemText primary="Settings" />
+                </UserMenuItem>
+                <Spacer />
+                {user && (
+                  <UserMenuItem
+                    onClick={() => {
+                      onLogout();
+                      handleItemClick("/");
+                    }}
+                  >
+                    <ListItemAvatar>
+                      <Avatar sx={{ bgcolor: colors.ui.error }}>
+                        <FaSignOutAlt />
+                      </Avatar>
+                    </ListItemAvatar>
+                    <ListItemText primary="Logout" />
+                  </UserMenuItem>
+                )}
+              </List>
+            </>
+          ) : (
+            <AccountScreen />
+          )}
+        </TransparentSafeArea>
+      </UserMenuModalContainer>
+    </SafeArea>
   );
 };
 

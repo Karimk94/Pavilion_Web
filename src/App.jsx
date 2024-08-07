@@ -5,35 +5,36 @@ import { CartContextProvider } from "./services/cart/cart.context";
 import { FavouritesContextProvider } from "./services/favourites/favourites.context";
 import { LocationContextProvider } from "./services/location/location.context";
 import { ProductsContextProvider } from "./services/products/products.context";
-import { theme, darkTheme } from "./infrastructure/theme/index";
-import { useState } from "react";
+import { ThemeContextProvider } from "./services/theme/theme.context";
 import { ThemeProvider } from "styled-components";
+import { theme } from "./infrastructure/theme";
+import { useState } from "react";
 
 function App() {
-  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [currentTheme, setCurrentTheme] = useState(theme);
 
-  const toggleTheme = () => {
-    setIsDarkMode((prevMode) => !prevMode);
+  const changeTheme = (newTheme) => {
+    setCurrentTheme(newTheme);
   };
 
   return (
-    <div>
-      <ThemeProvider theme={isDarkMode ? darkTheme : theme}>
-        <AuthenticationContextProvider>
-          <CartContextProvider>
-            <FavouritesContextProvider>
-              <LocationContextProvider>
-                <ProductsContextProvider>
-                  <Router>
-                    <AppNavigator toggleTheme={toggleTheme} />
-                  </Router>
-                </ProductsContextProvider>
-              </LocationContextProvider>
-            </FavouritesContextProvider>
-          </CartContextProvider>
-        </AuthenticationContextProvider>
-      </ThemeProvider>
-    </div>
+    <AuthenticationContextProvider>
+      <ThemeContextProvider onChangeTheme={changeTheme}>
+        <CartContextProvider>
+          <FavouritesContextProvider>
+            <LocationContextProvider>
+              <ProductsContextProvider>
+                <Router>
+                  <ThemeProvider theme={currentTheme}>
+                    <AppNavigator />
+                  </ThemeProvider>
+                </Router>
+              </ProductsContextProvider>
+            </LocationContextProvider>
+          </FavouritesContextProvider>
+        </CartContextProvider>
+      </ThemeContextProvider>
+    </AuthenticationContextProvider>
   );
 }
 
