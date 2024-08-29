@@ -8,13 +8,13 @@ import { convertCurrency } from "../../../utils/currency-converter";
 Modal.setAppElement("#root");
 
 const CartModalContainer = styled(Modal)`
-  background: white;
+  background-color: ${(props) => props.theme.colors.bg.primary};
   border-radius: 10px;
   padding: 20px;
   max-width: 600px;
   margin: 50px auto;
   outline: none;
-  color: black;
+  color: ${(props) => props.theme.colors.ui.primary};
   font-family: "Roboto", sans-serif;
   position: relative;
 `;
@@ -35,8 +35,8 @@ const CloseButton = styled.button`
 `;
 
 const CheckoutButton = styled.button`
-  background: ${(props) => props.theme.colors.ui.primary};
-  color: white;
+  background-color: ${(props) => props.theme.colors.ui.primary};
+  color: ${(props) => props.theme.colors.bg.primary};
   border: none;
   padding: 10px;
   cursor: pointer;
@@ -93,14 +93,26 @@ const DeleteButton = styled.button`
   }
 `;
 
+const StyledQuantityButton = styled.button`
+  background-color: ${(props) => props.theme.colors.bg.primary};
+  border-color: ${(props) => props.theme.colors.ui.primary};
+  cursor: pointer;
+  color: ${(props) => props.theme.colors.ui.primary};
+  border-radius: 5px;
+
+  &:hover {
+    color: ${(props) => props.theme.colors.ui.secondary};
+  }
+`;
+
 const WarningModalContainer = styled(Modal)`
-  background: white;
+  background-color: ${(props) => props.theme.colors.bg.primary};
+  color: ${(props) => props.theme.colors.ui.primary};
   border-radius: 10px;
   padding: 20px;
   max-width: 400px;
   margin: 50px auto;
   outline: none;
-  color: black;
   font-family: "Roboto", sans-serif;
   position: relative;
   text-align: center;
@@ -194,9 +206,13 @@ const CartModal = ({ isOpen = false, onClose, currency }) => {
                   2
                 )} ${currency.currencySymbol}`}</ItemPrice>
                 <ButtonContainer>
-                  <button onClick={() => handleRemove(item)}>-</button>
+                  <StyledQuantityButton onClick={() => handleRemove(item)}>
+                    -
+                  </StyledQuantityButton>
                   <ItemQuantity>{item.quantity}</ItemQuantity>
-                  <button onClick={() => addToCart(item)}>+</button>
+                  <StyledQuantityButton onClick={() => addToCart(item)}>
+                    +
+                  </StyledQuantityButton>
                   <DeleteButton onClick={() => handleDelete(item)}>
                     <FaTrash />
                   </DeleteButton>

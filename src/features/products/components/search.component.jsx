@@ -8,16 +8,23 @@ const SearchContainer = styled.div`
   padding: ${(props) => props.theme.space[3]};
   display: flex;
   align-items: center;
+  background-color: ${(props) => props.theme.colors.bg.primary};
 `;
 
 const CustomTextField = styled(TextField)`
   width: 100%;
+  color: ${(props) => props.theme.colors.ui.primary};
   .MuiInputBase-root {
     font-size: ${(props) => props.theme.fontSizes.button};
+    color: ${(props) => props.theme.colors.ui.primary};
   }
   .MuiInputBase-input::placeholder {
-    color: ${(props) => props.theme.colors.placeholder};
+    color: ${(props) => props.theme.colors.ui.primary};
   }
+`;
+
+const CustomSearchIcon = styled(SearchIcon)`
+  color: ${(props) => props.theme.colors.ui.primary};
 `;
 
 export const Search = ({ isFavouritesToggled, onFavouritesToggle }) => {
@@ -48,7 +55,7 @@ export const Search = ({ isFavouritesToggled, onFavouritesToggle }) => {
         InputProps={{
           endAdornment: (
             <IconButton onClick={handleSearch}>
-              <SearchIcon />
+              <CustomSearchIcon />
             </IconButton>
           ),
         }}
