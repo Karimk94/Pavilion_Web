@@ -22,7 +22,7 @@ export const darkColors = {
   text: {
     primary: "#FFFFFF",
     secondary: "#BDBDBD",
-    disabled: "#616161",
+    disabled: "#989898",
     inverse: "#000000",
     error: "#CF6679",
     success: "#03DAC6",

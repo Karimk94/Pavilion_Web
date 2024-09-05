@@ -1,9 +1,5 @@
 import { CameraAlt, Upload } from "@mui/icons-material";
-import {
-  Menu,
-  MenuItem,
-  Typography
-} from "@mui/material";
+import { Menu, Typography } from "@mui/material";
 import React, { useContext, useEffect, useState } from "react";
 import { TailSpin } from "react-loader-spinner";
 import { Spacer } from "../../../components/spacer/spacer.component";
@@ -23,9 +19,9 @@ import {
   Section,
   SectionTitle,
   StyledAvatar,
-  StyledTextField
+  StyledTextField,
+  StyledMenuItem,
 } from "../components/account-details.styles";
-
 
 const userRoles = [
   { Id: 3, Name: "Customer", visible: true },
@@ -58,6 +54,7 @@ const AccountDetails = () => {
   const [isCountriesLoading, setIsCountriesLoading] = useState(false);
   const [tempPhoto, setTempPhoto] = useState("");
   const [anchorEl, setAnchorEl] = useState(null);
+  const [shopName, setShopName] = useState("");
 
   const arrayTransform = (results = []) => {
     return pascalToCamel(results);
@@ -93,6 +90,32 @@ const AccountDetails = () => {
 
     getUserDetails();
   }, [user, countries]);
+
+  useEffect(() => {
+    const fetchShopDetails = async () => {
+      if (userDetails.shopId) {
+        const requestOptions = createRequestOptions(
+          { id: userDetails.shopId },
+          user?.token
+        );
+        try {
+          const { response } = await fetchHttp(
+            "Shop/getshopbyid",
+            requestOptions
+          );
+
+          if (response) {
+            const transformedShop = arrayTransform(response);
+            setShopName(transformedShop.name);
+          }
+        } catch (error) {
+          console.error("Failed to fetch shop details:", error);
+        }
+      }
+    };
+
+    fetchShopDetails();
+  }, [userDetails.shopId, user?.token]);
 
   useEffect(() => {
     const inputs = document.querySelectorAll("input");
@@ -214,159 +237,158 @@ const AccountDetails = () => {
 
   return (
     <SafeArea>
-    <AccountDetailsContainer>
-      <AvatarContainer onClick={handleOpenMenu}>
-        <StyledAvatar
-          alt="User Avatar"
-          src={tempPhoto || `/images/${userDetails.photoUrl}`}
-        />
-        <CameraIcon className="camera-icon" />
-      </AvatarContainer>
-      <Menu
-        id="photo-menu"
-        anchorEl={anchorEl}
-        open={Boolean(anchorEl)}
-        onClose={handleCloseMenu}
-      >
-        <MenuItem
-          onClick={() => document.getElementById("file-upload").click()}
+      <AccountDetailsContainer>
+        <AvatarContainer onClick={handleOpenMenu}>
+          <StyledAvatar
+            alt="User Avatar"
+            src={tempPhoto || `/images/${userDetails.photoUrl}`}
+          />
+          <CameraIcon className="camera-icon" />
+        </AvatarContainer>
+        <Menu
+          id="photo-menu"
+          anchorEl={anchorEl}
+          open={Boolean(anchorEl)}
+          onClose={handleCloseMenu}
         >
-          <Upload />
-          Upload Picture
-        </MenuItem>
-        {isMobileDevice() && (
-          <MenuItem onClick={handleUseCamera}>
-            <CameraAlt />
-            Use Camera
-          </MenuItem>
-        )}
-      </Menu>
-      <HiddenInput
-        id="file-upload"
-        type="file"
-        accept="image/*"
-        onChange={handlePhotoUpload}
-      />
-      <Spacer position="top" size="large">
-        <Typography variant="h5">{user?.email}</Typography>
-      </Spacer>
-      <Section>
-        <SectionTitle>Personal Information</SectionTitle>
-        <FieldRow>
-          <StyledTextField
-            label="Nickname"
-            name="userName"
-            value={userDetails.userName || ""}
-            onChange={handleChange}
-            variant="outlined"
-          />
-          <StyledTextField
-            label="Phone Number"
-            name="mobile"
-            value={userDetails.mobile || ""}
-            onChange={handleChange}
-            variant="outlined"
-          />
-        </FieldRow>
-        <FieldRow>
-          <StyledTextField
-            label="User Type"
-            name="userRoleId"
-            value={userDetails.userRoleId || ""}
-            onChange={handleChange}
-            variant="outlined"
-            select
-            disabled={user?.userRoleId === 1}
+          <StyledMenuItem
+            onClick={() => document.getElementById("file-upload").click()}
           >
-            {visibleRoles.map((role) => (
-              <MenuItem key={role.Id} value={role.Id}>
-                {role.Name}
-              </MenuItem>
-            ))}
-          </StyledTextField>
-          <StyledTextField
-            label="Shop"
-            name="shopId"
-            value={userDetails.shopId || ""}
-            onChange={handleChange}
-            variant="outlined"
-            select={false} // Disable the select functionality
-          />
-        </FieldRow>
-      </Section>
-      <Section>
-        <SectionTitle>Address Information</SectionTitle>
-        <FieldRow>
-          <StyledTextField
-            label="Address 1"
-            name="address1"
-            value={userDetails.userAdresses?.[0]?.address1 || ""}
-            onChange={handleChange}
-            variant="outlined"
-          />
-          <StyledTextField
-            label="Address 2"
-            name="address2"
-            value={userDetails.userAdresses?.[0]?.address2 || ""}
-            onChange={handleChange}
-            variant="outlined"
-          />
-        </FieldRow>
-        <FieldRow>
-          <StyledTextField
-            label="City"
-            name="city"
-            value={userDetails.userAdresses?.[0]?.city || ""}
-            onChange={handleChange}
-            variant="outlined"
-          />
-          <StyledTextField
-            label="State"
-            name="state"
-            value={userDetails.state || ""}
-            onChange={handleChange}
-            variant="outlined"
-          />
-        </FieldRow>
-        <FieldRow>
-          <StyledTextField
-            label="Country"
-            name="country"
-            value={userDetails.country || ""}
-            onChange={handleChange}
-            variant="outlined"
-            select
-            onFocus={handleCountryFocus}
-            InputProps={{
-              endAdornment: isCountriesLoading && (
-                <TailSpin
-                  height="50"
-                  width="50"
-                  color={colors.brand.primary}
-                  ariaLabel="loading"
-                />
-              ),
-            }}
-          >
-            {countries.map((country) => (
-              <MenuItem key={country.id} value={country.name}>
-                {country.name}
-              </MenuItem>
-            ))}
-          </StyledTextField>
-          <StyledTextField
-            label="PO Box"
-            name="poBox"
-            value={userDetails.userAdresses?.[0]?.postalCode || ""}
-            onChange={handleChange}
-            variant="outlined"
-          />
-        </FieldRow>
-      </Section>
-      <SaveButton variant="contained" onClick={handleSave}>
-        Save
-      </SaveButton>
-    </AccountDetailsContainer>
+            <Upload />
+            Upload Picture
+          </StyledMenuItem>
+          {isMobileDevice() && (
+            <StyledMenuItem onClick={handleUseCamera}>
+              <CameraAlt />
+              Use Camera
+            </StyledMenuItem>
+          )}
+        </Menu>
+        <HiddenInput
+          id="file-upload"
+          type="file"
+          accept="image/*"
+          onChange={handlePhotoUpload}
+        />
+        <Spacer position="top" size="large">
+          <Typography variant="h5">{user?.email}</Typography>
+        </Spacer>
+        <Section>
+          <SectionTitle>Personal Information</SectionTitle>
+          <FieldRow>
+            <StyledTextField
+              label="Nickname"
+              name="userName"
+              value={userDetails.userName || ""}
+              onChange={handleChange}
+              variant="outlined"
+            />
+            <StyledTextField
+              label="Phone Number"
+              name="mobile"
+              value={userDetails.mobile || ""}
+              onChange={handleChange}
+              variant="outlined"
+            />
+          </FieldRow>
+          <FieldRow>
+            <StyledTextField
+              label="User Type"
+              name="userRoleId"
+              value={userDetails.userRoleId || ""}
+              onChange={handleChange}
+              variant="outlined"
+              select
+              disabled={user?.userRoleId === 1}
+            >
+              {visibleRoles.map((role) => (
+                <StyledMenuItem key={role.Id} value={role.Id}>
+                  {role.Name}
+                </StyledMenuItem>
+              ))}
+            </StyledTextField>
+            <StyledTextField
+              label="Shop"
+              name="shop"
+              value={shopName || ""}
+              variant="outlined"
+              disabled
+            />
+          </FieldRow>
+        </Section>
+        <Section>
+          <SectionTitle>Address Information</SectionTitle>
+          <FieldRow>
+            <StyledTextField
+              label="Address 1"
+              name="address1"
+              value={userDetails.userAdresses?.[0]?.address1 || ""}
+              onChange={handleChange}
+              variant="outlined"
+            />
+            <StyledTextField
+              label="Address 2"
+              name="address2"
+              value={userDetails.userAdresses?.[0]?.address2 || ""}
+              onChange={handleChange}
+              variant="outlined"
+            />
+          </FieldRow>
+          <FieldRow>
+            <StyledTextField
+              label="City"
+              name="city"
+              value={userDetails.userAdresses?.[0]?.city || ""}
+              onChange={handleChange}
+              variant="outlined"
+            />
+            <StyledTextField
+              label="State"
+              name="state"
+              value={userDetails.state || ""}
+              onChange={handleChange}
+              variant="outlined"
+            />
+          </FieldRow>
+          <FieldRow>
+            <StyledTextField
+              label="Country"
+              name="country"
+              value={userDetails.country || ""}
+              onChange={handleChange}
+              variant="outlined"
+              select
+              onFocus={handleCountryFocus}
+              InputProps={{
+                endAdornment: isCountriesLoading && (
+                  <TailSpin
+                    height="50"
+                    width="50"
+                    color={colors.brand.primary}
+                    ariaLabel="loading"
+                  />
+                ),
+              }}
+            >
+              {countries.map((country) => (
+                <StyledMenuItem key={country.id} value={country.name}>
+                  {country.name}
+                </StyledMenuItem>
+              ))}
+            </StyledTextField>
+            <StyledTextField
+              label="PO Box"
+              name="poBox"
+              value={userDetails.userAdresses?.[0]?.postalCode || ""}
+              onChange={handleChange}
+              variant="outlined"
+            />
+          </FieldRow>
+        </Section>
+        <SaveButton variant="contained" onClick={handleSave}>
+          Save
+        </SaveButton>
+      </AccountDetailsContainer>
     </SafeArea>
   );
 };
